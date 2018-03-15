@@ -28,6 +28,9 @@ window.onload = function () {
     });
     let div = document.createElement('div');
     div.classList.add('github-link');
+    if(location.pathname.indexOf('/zh_cn')!==-1)
+    div.innerHTML = `<a href='https://github.com/DevChache/serverhub-mvc/'>访问 GitHub 源码仓库</a>`;
+    else
     div.innerHTML = `<a href='https://github.com/DevChache/serverhub-mvc/'>View on GitHub</a>`
     content.appendChild(div);
 }

@@ -41,7 +41,7 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+    font-family: 'Roboto Mono', 'Courier New', Courier, 'Microsoft YaHei', monospace;
 }
 
 h1 {
@@ -73,7 +73,7 @@ ul li {
 }
 
 ul.monospace li {
-    font-family: "Roboto Mono", 'Courier New', Courier, monospace;
+    font-family: "Roboto Mono", 'Courier New', Courier, 'Microsoft YaHei', monospace;
 }
 
 a {

@@ -12,8 +12,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Instance.Run()</title>
-    <link rel="stylesheet" href="../contents/index.css">
+    <title>Instance.Run() 方法</title>
+    <link rel="stylesheet" href="../../contents/index.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 </head>
@@ -22,14 +22,13 @@
 
     <header>
         <div class="serverhub-logo">
-            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
         </div>
     </header>
     <main>
         <div class="content">
-            <h2>Instance.Run()</h2>
-            <p>Here is an example directory for ServerHub web server. (You can generate such a demo with serverhub-cli tool
-                on npm)</p>
+            <h2>Instance.Run() 方法</h2>
+            <p>这里将给出一个简单的目录，包含了 ServerHub 正常启动所需要的各个基本路径：（你可以通过 NPM 上的 serverhub-cli 工具来生成此目录）</p>
             <p>
                 <div class="non-list-style ul-directory">
                     <ul>demo_directory/
@@ -50,22 +49,22 @@
                         </li>
                         <li>
                             <ul>www/
-                                <span class="comment">// web directory</span>
+                                <span class="comment">// web 目录</span>
                                 <li>global.css</li>
                                 <li>global.js</li>
                             </ul>
                         </li>
                         <li>app.js
-                            <span class="comment">// entry of server</span>
+                            <span class="comment">// ServerHub 入口函数</span>
                         </li>
                     </ul>
                 </div>
             </p>
-            <p>Now, we need to do some modification to
-                <code>app.js</code>.</p>
-            <h3>Set up configurations</h3>
-            <p>In your
-                <code>app.js</code>, you will probably see the following code:</p>
+            <p>现在，我们对
+                <code>app.js</code> 做一些修改。</p>
+            <h3>配置启动参数</h3>
+            <p>在你的
+                <code>app.js</code>中，可以看到类似于下面例子的代码：</p>
             <p>
                 <pre><code class="js">const serverhub = require('serverhub-mvc');
 const fs = require('fs');
@@ -85,29 +84,24 @@ serverhub.Run({
 });</code></pre>
             </p>
             <p>
-                <code>Run()</code> method has two required parameters:</p>
+                <code>Run()</code> 方法需要两个参数：</p>
             <p>
                 <ul>
                     <li>
                         <code>config</code>
-                        <p>The config file defines base directory of the server, which is current of
-                            <code>app.js</code>. There's a
-                            <code>Controller</code> property that specifies which controller to register.</p>
-                        <p> And then ServerHub will try to search and parse under controller file. When you are writing, you
-                            may check this document or search under
-                            <code>node_modules/serverhub-mvc/index.d.ts</code> file along with all your dependecies, which I've already provided the type definitions there.</p>
+                        <p>此参数定义了服务器的根目录，也就是 <code>app.js</code> 所在的目录。该参数中有一个
+                            <code>Controller</code> 属性指定了你要注册的控制器（也就是 controller 目录下的文件）。</p>
+                        <p>ServerHub 在启动时（称作 Compile-time，以后会提到这个词）会尝试找到并解析、注册这些文件。当你写 config 参数时，可以参阅<code>node_modules/serverhub-mvc/index.d.ts</code> 中的类型定义。我使用 TypeScript 来开发，所以在一些现代编辑器中，你可以得到详细的类型推断、提示。此时，你不需要知道太多参数属性的含义，因为它们会在后续的文档中得到解释说明。</p>
                     </li>
                     <li>
-                        <code>route</code> (callback function)
-                        <p>
-                            This function will have one parameter that refers to server route object, you can register custom route rule or ignore certain
-                            matches.
+                        <code>route</code>（回调函数形式）
+                        <p>此函数用于注册路由，你可以通过它来注册或是添加路由例外。具体使用方法，我们会在以后的文档中详细说明。
                         </p>
                     </li>
                 </ul>
             </p>
-            <p>Now, try
-                <code>node app.js</code>, ServerHub will start your website at port 926 (my best friend's birthday).</p>
+            <p>现在，尝试运行
+                <code>node app.js</code>，ServerHub 会启动并监听 926 端口（是一个生日）。</p>
         </div>
     </main>
     <footer>
@@ -119,7 +113,7 @@ serverhub.Run({
             <i>Changrui Yang</i>
         </span>
     </footer>
-    <script src="../scripts/index.js"></script>
+    <script src="../../scripts/index.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
 </body>
 

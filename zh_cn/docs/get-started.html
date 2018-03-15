@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ServerHub 入门指南</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>入门</h2>
+            <p>通过这篇指南，希望你能了解到此项目的更多信息，也能够通过 ServerHub 快速构建一个简单的动态网站。</p>
+            <h3>ServerHub 能做什么？</h3>
+            <p>简单来讲，ServerHub 会根据你的配置（或是一些默认配置）来帮助你处理 HTTP 请求，返回适当的响应，可以根据你的路由规则来匹配控制器和触发相应的操作函数。并且，ServerHub 提供了数据库支持（目前支持 MySQL），让你可以通过非常简单的配置，完成数据库连接、查询等操作.ServerHub 的目标是让动态网站架设更加简单，也更加轻便。根据当前的设计，你使用 serverhub-cli 工具创建的 demo 目录可以进行路由配置，视图和模型绑定，以及控制器的注册操作。</p>
+            <p>在最新的更新当中，ServerHub 将 Node.js 原生的 ServerResponse 对象进行了一定的封装，这样你在 Action 方法中能够更加轻松处理数据（ServerHub 尽力保持与 Node.js 原生的最大兼容，但是你在使用前仍然需要充分阅读相关文档）。另一方面，ServerHub 为控制器提供了控制器作用域变量，让开发者访问系统参数和调用模块更加轻松了。关于这些更新的详细信息，建议阅读 master 分支的 CHANGELOG.md 说明。</p>
+            <h3>安装 ServerHub</h3>
+            <p>安装过程非常简单，你只需要在你的项目目录执行</p>
+            <p>
+                <pre><code class='bash'>npm i --save serverhub-mvc</code></pre>
+            </p>
+            <p>即可。此操作会将 ServerHub 安装到你的 node_modules 当中，你只需要在后端程序的入口函数处引入并使用 ServerHub。</p>
+            <h3>使用</h3>
+            <p>参阅 <a href="./instance.run.html">Instance.Run()</a></p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
