@@ -24,7 +24,7 @@ window.onload = function () {
         });
     });
     header_div_logo.addEventListener('click', () => {
-        location.href = '/'
+        location.href = '../'
     });
     let div = document.createElement('div');
     div.classList.add('github-link');
