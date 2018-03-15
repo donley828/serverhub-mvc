@@ -141,6 +141,7 @@ main div.content {
     position: absolute;
     max-width: 800px;
     left: calc(50% - 400px);
+    padding-bottom: 32px;
 }
 
 @media (max-width:800px) {
