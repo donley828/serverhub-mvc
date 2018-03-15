@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ServerHub</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Instance.Run()</h2>
+            <p>Here is an example directory for ServerHub web server. (You can generate such a demo with serverhub-cli tool
+                on npm.</p>
+            <p>
+                <div class="non-list-style ul-directory">
+                    <ul>demo_directory/
+                        <li>
+                            <ul>controller/
+                                <li>home.js</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>model/
+                                <li>home.json</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>view/
+                                <li>home.html</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>www/
+                                <span class="comment">// web directory</span>
+                                <li>global.css</li>
+                                <li>global.js</li>
+                            </ul>
+                        </li>
+                        <li>app.js
+                            <span class="comment">// entry of server</span>
+                        </li>
+                    </ul>
+                </div>
+            </p>
+            <p>Now, we need to do some modification to
+                <code>app.js</code>.</p>
+            <h3>Set up configuration</h3>
+            <p>In your
+                <code>app.js</code>, you will probably see the following code:</p>
+            <p>
+                <pre><code class="js">const serverhub = require('serverhub-mvc');
+const fs = require('fs');
+const path = require('path');
+
+serverhub.Run({
+    BaseDir: __dirname,
+    WebDir: 'www/',
+    Controllers: ['home.js'],
+    MaxCacheSize: 256 // unit: MB
+}, (route) => {
+    route.MapRoute('default', '{controller}/{action}/{id}', {
+        Controller: 'home',
+        Action: 'index',
+        id: ''
+    });
+});</code></pre>
+            </p>
+            <p>
+                <code>Run()</code> method has two required parameters:</p>
+            <p>
+                <ul>
+                    <li>
+                        <code>config</code>
+                        <p>The config file defines base directory of the server, which is current of
+                            <code>app.js</code>. There's a
+                            <code>Controller</code> property that specifies which controller to register.</p>
+                        <p> And then ServerHub will try to search and parse under controller file. When you are writing, you
+                            may check this document or search under
+                            <code>node_modules/serverhub-mvc/index.d.ts</code> file along with all your dependecies, which I've already provided the type definitions there.</p>
+                    </li>
+                    <li>
+                        <code>route</code> (callback function)
+                        <p>
+                            This function will have one parameter that refers to server route object, you can register custom route rule or ignore certain
+                            matches.
+                        </p>
+                    </li>
+                </ul>
+            </p>
+            <p>Now, try
+                <code>node app.js</code>, ServerHub will start your website at port 926 (my best friend's birthday).</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

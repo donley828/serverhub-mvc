@@ -1,0 +1,217 @@
+/**
+ * ServerHub Doc Page Stylesheet
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ */
+
+body,
+html {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, 'Microsoft YaHei', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #424242;
+}
+
+* {
+    font-size: 16px;
+}
+
+header {
+    background-color: #FFFFFF;
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    height: 64px;
+    box-shadow: 0 3px 9px 0 rgba(0, 0, 0, .3);
+    z-index: 4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Roboto Mono', 'Courier New', Courier, monospace;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+h2 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 20px;
+}
+
+h4 {
+    font-size: 18px;
+}
+
+h5 {
+    font-size: 17px;
+}
+
+h6 {
+    font-size: 16px;
+}
+
+ul li {
+    margin: 8px 0;
+}
+
+ul.monospace li {
+    font-family: "Roboto Mono", 'Courier New', Courier, monospace;
+}
+
+a {
+    text-decoration: none;
+    color: #2196f3;
+}
+
+a:focus,
+a:active,
+a:visited {
+    color: #2196f3;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p {
+    line-height: 27px;
+}
+
+code {
+    font-size: 14px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    padding: 0 4px;
+}
+
+pre>code * {
+    font-size: initial;
+}
+
+header div.serverhub-logo {
+    height: calc(100% - 32px);
+    position: absolute;
+    top: 16px;
+    left: calc(50% - 75.22px);
+}
+
+header div.serverhub-logo img {
+    height: 100%;
+    width: auto;
+    display: block;
+}
+
+main {
+    position: absolute;
+    top: 64px;
+    z-index: 3;
+    display: block;
+    width: 100%;
+    height: calc(100% - 96px);
+    overflow: auto;
+}
+
+main section.screen {
+    display: block;
+    width: 100%;
+    background-color: #ffffff;
+    position: absolute;
+}
+
+main div.content {
+    display: block;
+    position: absolute;
+    max-width: 800px;
+    left: calc(50% - 400px);
+}
+
+@media (max-width:800px) {
+    main div.content {
+        left: 16px;
+        right: 16px;
+    }
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    height: 32px;
+    display: block;
+    padding: 0 16px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    width: 100%;
+    z-index: 4;
+    line-height: 32px;
+    border-top: 1px solid rgba(0, 0, 0, .1);
+}
+
+@media (min-width: 800px) {
+    footer span.g800-only {
+        display: inline;
+    }
+    footer span.s800-only {
+        display: none;
+    }
+}
+
+@media (max-width: 799.9px) {
+    footer span.g800-only {
+        display: none;
+    }
+    footer span.s800-only {
+        display: inline;
+    }
+}
+
+footer span,
+footer a,
+footer i,
+footer b {
+    font-size: 12px;
+}
+
+div.non-list-style ul {
+    list-style: none;
+}
+
+div.ul-directory {
+    font-family: "Roboto Mono", 'Courier New', Courier, monospace;
+    font-size: 14px;
+}
+
+div.ul-directory ul {
+    padding-left: 0;
+    box-sizing: border-box;
+    color: #505050
+}
+
+div.ul-directory ul li {
+    padding: 0 0 0 8px;
+    margin: 0 0 0 16px;
+    color: #666666;
+    border-left: 2px solid #9e9e9e;
+}
+
+div.ul-directory span.comment {
+    color: #388e3c;
+    font-size: 14px;
+}
