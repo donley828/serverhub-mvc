@@ -28,9 +28,23 @@ window.onload = function () {
     });
     let div = document.createElement('div');
     div.classList.add('github-link');
-    if(location.pathname.indexOf('/zh_cn')!==-1)
-    div.innerHTML = `<a href='https://github.com/DevChache/serverhub-mvc/'>访问 GitHub 源码仓库</a>`;
-    else
-    div.innerHTML = `<a href='https://github.com/DevChache/serverhub-mvc/'>View on GitHub</a>`
+    let nav = document.createElement('div');
+    nav.classList.add('nav');
+    if (location.pathname.indexOf('/zh_cn') !== -1) {
+        nav.innerHTML = `<div class="nav">
+            <span><a href="../index.html">首页</a></span>
+            <span><a href="./docs.html">文档</a></span>
+        </div>`;
+        div.innerHTML = `<hr><a href='https://github.com/DevChache/serverhub-mvc/'>访问 GitHub 源码仓库</a>`;
+    }
+    else {
+        nav.innerHTML = `<div class="nav">
+            <span><a href="../index.html">Home</a></span>
+            <span><a href="./docs.html">Docs</a></span>
+        </div>`;
+        div.innerHTML = `<hr><a href='https://github.com/DevChache/serverhub-mvc/'>View on GitHub</a>`
+    }
+    if (document.querySelector('#nonav') === null)
+        content.insertBefore(nav, content.firstChild);
     content.appendChild(div);
 }

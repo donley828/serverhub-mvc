@@ -155,6 +155,21 @@ main div.content ul {
     }
 }
 
+main div.content div.nav {
+    display: flex;
+    justify-content: space-between;
+    height: 48px;
+    line-height: 48px;
+    width: 100%;
+}
+
+main div.content div.nav span {
+    display: block;
+    text-transform: uppercase;
+    height: 100%;
+    font-weight: bold;
+}
+
 footer {
     position: fixed;
     bottom: 0;
