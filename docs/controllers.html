@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 16, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Controllers</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Controllers</h2>
+            <p>Controllers are the handlers for most routed HTTP requests. When a special route rule is satisfied, ServerHub
+                will dispatch correct action method in controllers and return operated data or view to the client.</p>
+            <h3>Composing controllers</h3>
+            <p>Here is a good example of
+                <code>home.js</code> custom controller:</p>
+            <p>
+                <pre><code class="js">"use strict";
+
+return {
+    index: function (req, res, method) {
+        return this.View();
+    },
+    primary: function (req, res, method) {
+        var context = this.View();
+        context.name = 'Ziyuan';
+        return context;
+    }
+};</code></pre>
+            </p>
+            <p>Controller files are plain but special JavaScript files. you must return an object providing
+                <b>action functions</b> to ServerHub. So when ServerHub dispatching after routing, your custom controller actions
+                can be invoked.</p>
+            <p>You might be curious about the syntax in ServerHub controllers. There is something weird and if you use lint
+                tools, they could even throw errors. But don't worry, we will talk about this later.</p>
+            <p>There are three primary paramters of a controller action method: request, response and method. They are all
+                <b>required</b>.</p>
+            <p>
+                <ul>
+                    <li>
+                        <b>request</b> refers to the IncomingMessage of Node.js.</li>
+                    <li>
+                        <b>response</b> refers to the ServerResponse object of the request.</li>
+                    <li>
+                        <b>method</b> is a string and can be the following: GET, POST, PATCH, UPDATE, DELETE and PUT.</li>
+                </ul>
+            </p>
+            <h2>Compile-time and Static Controllers</h2>
+            <p>If you modify any controller files while ServerHub running, check if your browser will show you the latest modifications.
+                There will be no effect when you refresh the web pages. ServerHub loads and registers controllers when the
+                application first starts. And it will never automatically update these files. Not like views and models,
+                ServerHub always cache and renew cached content for them. So that ServerHub can be both fast and stable.</p>
+            <p>So, never try to change controller files during ServerHub running.</p>
+
+            <h2>Controller Scope Variables</h2>
+            <p>There are several variables that can be accessed inside controller actions. In order to use them, you must explicitly
+                use pointer
+                <b>
+                    <i>this</i>
+                </b> as a reference to the controller instance. Or, there will be an error message displayed.</p>
+            <p>You are suggested to use
+                <b>arrow functions</b> that accessible since ECMAScript 2015. Or, you may use some workaround to access to those
+                variables (closure or something else).</p>
+
+            <h3>Complete list of supported controller scope variables</h3>
+            <p>Usage of these variables are avaliable in later chapters. Some variables that have primitive types like
+                <code>string</code>,
+                <code>number</code> etc. (as well as some reference/alias to vanilla Node.js implementation) will not be doced.</p>
+            <p>
+                <ul>
+                    <li>
+                        <code>this.View</code>
+                        <b>
+                            <i>Function()</i>
+                        </b> Returns the corresponding model file.</li>
+                    <li>
+                        <code>this.Runtime</code>
+                        <b>
+                            <i>Object</i>
+                        </b> Contains bunch of other runtime features.
+                        <ol>
+                            <li>
+                                <code>this.Runtime.DBProvider</code>
+                                <b>
+                                    <i>Object</i>
+                                </b>A reference to initialized database provider instanced (default MySQL).</li>
+
+                            <li>
+                                <code>this.Runtime.FileHelper</code>
+                                <b>
+                                    <i>Object</i>
+                                </b>A reference to FileHelper object.</li>
+                        </ol>
+                    </li>
+                    <li>
+                        <code>this.System</code>
+                        <b>
+                            <i>Object</i>
+                        </b> Provide bunch of readonly constants inside ServerHub instance.
+                        <ol>
+                            <li>
+                                <code>this.System.Version</code>
+                                <b>
+                                    <i>string</i>
+                                </b>ServerHub version string.</li>
+
+                            <li>
+                                <code>this.System.NodeVersion</code>
+                                <b>
+                                    <i>string</i>
+                                </b>Node.js version.</li>
+
+                            <li>
+                                <code>this.System.Platform</code>
+                                <b>
+                                    <i>string</i>
+                                </b>Platform information (win32, linux, etc.).</li>
+
+                            <li>
+                                <code>this.System.Hardware</code>
+                                <b>
+                                    <i>Object </i>
+                                </b>Bunch of information about hardware.
+                                <ul>
+                                    <li>
+                                        <code>this.System.Hardware.TotalMemory</code>
+                                        <b>
+                                            <i>number</i>
+                                        </b>Installed memory size (byte).</li>
+
+                                    <li>
+                                        <code>this.System.Hardware.FreeMemory</code>
+                                        <b>
+                                            <i>number</i>
+                                        </b>Free memory size (byte).</li>
+
+                                    <li>
+                                        <code>this.System.Hardware.NetworkInterfaces</code>
+                                        <b>
+                                            <i>Object</i>
+                                        </b>Returns interfaces that have been assigned a network address.</li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <code>this.System.Die</code>
+                                <b>
+                                    <i>Function(exit_code)</i>
+                                </b>Exit current ServerHub process.</li>
+                        </ol>
+                    </li>
+                </ul>
+            </p>
+            <h2>Actions in Controller</h2>
+            <p>Actions are methods that been invoked when the HTTP request matches a certain route path. And it handles the
+                request and operates on the response. In this chapter, we will discuss about actions in controller and help
+                you learn more about ServerHub controllers.</p>
+            <h3>How to compose an action</h3>
+            <p>Let's see an example:</p>
+            <p>
+                <pre><code class="js">index: function (request, response, method){
+    // do something
+    return this.View();
+}</code></pre>
+            </p>
+            <p>See, this is a very simple 'index' action. You need to declare the action as a function member of an object and
+                return the object as the controller instance. One more thing, as we've mentioned a lot, you should always
+                use 'this' pointer while referencing controller scope variables.</p>
+            <p>There are three parameters and they are all required. If you want to manually control server response by calling
+                methods like
+                <code>res.write()</code>, then ServerHub will ignore default render process, which means:</p>
+            <p>
+                <pre><code class="js">index: function (request, response, method){
+    response.write('Hello, XWZ');
+    return this.View();
+}</code></pre>
+            </p>
+            <p>will only output 'Hello, XWZ' and the return value of 'index' action is gonna be ignored.</p>
+            <p>The
+                <code>request</code> parameter is the vanilla Node.js request (aka
+                <code>IncomingMessage</code> object) (at version 0.0.7). But the
+                <code>response</code> parameter is a virtual
+                <code>ServerResponse</code> object. Several methods and properties are wrapped on that object, which are not exactly the same as the
+                original one. Read the document before invoking.
+                <code>Method</code> is a string that tells the current HTTP method (like GET, POST, etc).</p>
+            <h3>Action naming convention</h3>
+            <p>Action names are all written in lower cases. Characters from 'a' to 'z', with numbers and
+                <b>_</b> (underscore) are allowed. There are several reserved action names that you cannot use: Runtime, System,
+                Console, View.</p>
+            <p>The best practice are using single words as action names, and verbs are prefered. An action name with more 20
+                characters are pretty bad. And you should know that in later versions of ServerHub, maybe there will be an
+                limitation of action name length, which might not run functional normally with your old-fashioned code.</p>
+            <h2>About Controller Syntax</h2>
+            <p>If you use some lint tools, ServerHub's controller file may report syntax errors. It could tell that
+                <i>"return statement outside function"</i>. But actually they are valid
+                <b>partial</b> JavaScript files.</p>
+            <p>Controllers scripts are all
+                <b>functions</b>, they are not independent JavaScript files. When you try to execute controller files directly,
+                it is not gonna work.</p>
+            <p>Here is an example. We have a controller file like this (
+                <code>home.js</code> ):</p>
+            <p>
+                <pre><code class="js">"use strict";
+
+return {
+    index: function(req, res, method) {
+        return this.View();
+    }
+}</code></pre>
+            </p>
+            <p>If you treat this
+                <code>home.js</code> as a plain JavaScript file, there should be curly braces surrounding the return statement. Check this:</p>
+
+            <p>
+                <pre><code class='js'>"use strict";
+
+function (){
+    return {
+        index: function(req, res, method) {
+            return this.View();
+        }
+    }
+}</code></pre>
+            </p>
+            <p>Now, it is an absolute JavaScript file.</p>
+            <p>
+                <b>But, do you remember that our controllers are all
+                    <i>functions</i>
+                </b>? What does this mean? Your whole controller file is a function, and it has invisible boundries which are
+                curly braces. So, if we manually add function definition to controller file, the loaded controller will be
+                like:
+            </p>
+            <p>
+                <pre><code class="js">function (){
+    "use strict";
+        
+    function (){
+        return {
+            index: function(req, res, method) {
+                return this.View();
+            }
+        };
+    }
+}</code></pre>
+            </p>
+            <p>As you can see, there is a redundant pair of function braces that should be removed. And this is why we call
+                ServerHub controllers "partial JavaScript files".</p>
+            <p>Go to
+                <a href="./instance.run.html">Instance.Run()</a>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
