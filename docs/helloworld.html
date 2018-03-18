@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 18, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>An Hello World Example</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>An Hello World Example for ServerHub</h2>
+            <p>In this chapter, I will give you a very simple helloworld example for ServerHub static services. Feel free to
+                leave issues or prs.</p>
+            <h3>Set up your working directory</h3>
+            <p>Your working directory is suggested to be as clean as possible in this helloworld example. Or you can create
+                a new folder as the project directory:</p>
+            <p>
+                <pre><code class="bash">mkdir serverhub-helloworld && cd serverhub-helloworld</code></pre>
+            </p>
+            <p>Now, initialize your directory with
+                <code>npm</code>.</p>
+            <p>
+                <pre><code class="bash">npm init</code></pre>
+            </p>
+            <p>Or, you can just skip nagging prompt by add
+                <code>-y</code> option to
+                <code>npm init</code> command.</p>
+            <h3>Install ServerHub</h3>
+            <p>In order to correctly install and run ServerHub applications, you MUST have <b>Node.js</b> installed (which will also install <code>npm</code> for your machine).</p>
+            <p>There is something that I need to stress:
+                <b>never try to install ServerHub by clone GitHub repository if you don't want to read the source code</b> (Because
+                there will be some dependencies missing and you have to install them manually). Instead, the best and simple
+                way is to use
+                <code>npm</code>.</p>
+            <p>
+                <pre><code class='bash'>npm install --save serverhub-mvc</code></pre>
+            </p>
+            <p>Done! Now you have serverhub installed in your working directory.</p>
+            <p>After that, your directory looks like the following:</p>
+            <p>
+                <div class="non-list-style ul-directory">
+                    <ul>serverhub-helloworld/
+                        <li>node_modules/
+                        </li>
+                        <li>app.js
+                            <span class="comment">// entry of server</span>
+                        </li>
+                        <li>package-lock.json
+                        </li>
+                        <li>package.json
+                        </li>
+
+                    </ul>
+                </div>
+            </p>
+            <h3>Edit
+                <code>app.js</code>
+            </h3>
+            <p>First of all, we need to import serverhub. And then we call
+                <code>Run()</code> method to set up ServerHub.</p>
+            <p>The modified code should look like this:</p>
+            <p>
+                <pre><code class="js">const serverhub = require('serverhub-mvc');
+
+serverhub.Run({
+    BaseDir: __dirname
+});</code></pre>
+            </p>
+            <p>Now, run application with
+                <code>node app.js</code>. Then go to your favorite browser and checkout "http://localhost:926". There might be an 404 page shown.</p>
+            <p>
+                <img src="../assets/helloworld-404.png" alt="404 page example">
+            </p>
+            <p>
+                <b>Good job!</b> Now, your first ServerHub app is running correctly!</p>
+            <h2>Extended Example of Hello World</h2>
+            <p>In previous section, we managed to start the server app but it only returns an 404 page. We definitely don't
+                want to show a missing message. So in this section, we will dive into ServerHub controllers and web directories.</p>
+            <h3>Add your first controller</h3>
+            <p>In default, ServerHub treat "controller/" at same directory of
+                <code>app.js</code> as the controller directory. So, we create such folder and create a file named
+                <code>home.js</code>. But don't worry, you will have chance to assign a new value for it.</p>
+            <p>And here is the content:</p>
+            <p>
+                <pre><code class="js">return {
+    index: function (req, res, method) {
+        res.write('Hello ServerHub');
+        res.end();
+    }
+}</code></pre>
+            </p>
+            <p>Restart serverhub and checkout browser.</p>
+            <p>
+                <img src="../assets/helloworld-controller.png" alt="controller example">
+            </p>
+            <p>Why this page shows up? We didn't change the URL in browser!</p>
+            <p>And this is how ServerHub route works. It defaultly dispatchs the "index" action defined in "home" controller and displays the operated data. Try to make some change in <code>home.js</code> controller. In this situation, URL "/" is equivalent to "/home/index/". Isn't it cool!</p>
+            <h3>After this example</h3>
+            <p>Now we've gone through the whole example of ServerHub helloworld. Have you learnt how to build a simple server-side app with ServerHub?</p>
+            <p>For more guides and documents, visit <a href="./docs.html">doc page</a>.</p>
+            <hr>
+            <h3>Contributions of this chapter</h3>
+            <p>
+                <a href="https://github.com/maoyuyang">Yuyang Mao</a> Suggested to provide this helloworld example for ServerHub.</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

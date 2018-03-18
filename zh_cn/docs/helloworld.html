@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 18, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Helloworld 快速上手</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>快速上手 ServerHub 的 helloworld 例子</h2>
+            <p>这一章，我们会通过一个基于 ServerHub 的 helloworld 静态服务器程序来带你直观感受 ServerHub。阅读过后，欢迎你在 issues 中提意见或者在 pr 中提交合并请求。</p>
+            <h3>配置工作目录</h3>
+            <p>在本例中，我建议你将自己的工作目录清理得越干净越好。或者你可以直接创建一个全新的目录来作为项目空间。</p>
+            <p>
+                <pre><code class="bash">mkdir serverhub-helloworld && cd serverhub-helloworld</code></pre>
+            </p>
+            <p>现在，用 <code>npm</code> 来初始化空间。</p>
+            <p>
+                <pre><code class="bash">npm init</code></pre>
+            </p>
+            <p>或者，你可以在 <code>npm init</code> 后面加上 <code>-y</code> 参数从而跳过提示问题。</p>
+            <h3>安装 ServerHub</h3>
+            <p>为了能够安装和运行 ServerHub，你 <b>必须</b> 要在本机安装好 <b>Node.js</b>。在安装过程中，<code>npm</code> 也会自动被安装。</p>
+            <p>进行下一步之前，我需要着重强调：<b>如果你不打算阅读或使用源代码，就一定不要通过 clone GitHub 仓库的方式来安装</b>（因为这样你会缺少几个重要的依赖项，还需要费神自行安装，完全没有必要这样做）。正确的方法是使用 <code>npm</code>。</p>
+            <p>
+                <pre><code class='bash'>npm install --save serverhub-mvc</code></pre>
+            </p>
+            <p>妥了！现在 ServerHub 已经被安装到了你的工作目录。</p>
+            <p>经过上面的步骤，你的工作空间应该像下面这样：</p>
+            <p>
+                <div class="non-list-style ul-directory">
+                    <ul>serverhub-helloworld/
+                        <li>node_modules/
+                        </li>
+                        <li>app.js
+                            <span class="comment">// entry of server</span>
+                        </li>
+                        <li>package-lock.json
+                        </li>
+                        <li>package.json
+                        </li>
+
+                    </ul>
+                </div>
+            </p>
+            <h3>编辑
+                <code>app.js</code>
+            </h3>
+            <p>首先，请在其中引入 ServerHub 依赖。然后调用
+                <code>Run()</code> 方法来配置 ServerHub。</p>
+            <p>修改后的代码应该如下面所示：</p>
+            <p>
+                <pre><code class="js">const serverhub = require('serverhub-mvc');
+
+serverhub.Run({
+    BaseDir: __dirname
+});</code></pre>
+            </p>
+            <p>现在，执行 <code>node app.js</code> 来启动 ServerHub，然后到你最常用的浏览器访问“http://localhost:926”。如果一切正常，你会看到一个写着 404 错误的页面。</p>
+            <p>
+                <img src="../../assets/helloworld-404.png" alt="404 page example">
+            </p>
+            <p>
+                <b>干得好！</b>现在你的 ServerHub 实例已经可以正常工作了！</p>
+            <h2>对上例的拓展</h2>
+            <p>上面的段落中，我们成功启动了一个 ServerHub 服务器实例，但是它只显示了一个 404 错误页。我们肯定不会希望它这样子，所以跟我进行一些改动。在本小节，我们要深入一些看看如何使用 ServerHub 的 controller。</p>
+            <h3>你的第一个 controller</h3>
+            <p>默认情况下，ServerHub 在编译时（参阅 controller 文档）会将与 <code>app.js</code> 同在一处的“controller/”目录作为搜寻 controller 的目录。所以我们需要创建这样一个文件夹，然后添加并编辑 <code>home.js</code>。不要担心，这个 controller 目录是可以自己设置的，以后就会了解到了。</p>
+            <p>该文件的内容如下：</p>
+            <p>
+                <pre><code class="js">return {
+    index: function (req, res, method) {
+        res.write('Hello ServerHub');
+        res.end();
+    }
+}</code></pre>
+            </p>
+            <p>下面重启 ServerHub，并刷新浏览器页面</p>
+            <p>
+                <img src="../../assets/helloworld-controller.png" alt="controller example">
+            </p>
+            <p>诶！？！？有没有感到一丢丢奇怪？为什么会出现这样一个页面？我们完全没有改变过浏览器访问的网址呀！</p>
+            <p>哈哈，这就是 ServerHub 的工作了。此时此刻，此情此景，ServerHub route 会默认匹配 home controller 中的 index 动作方法，然后触发它，接着把操作的结果返回给浏览器。你自己也可以试着改变 <code>home.js</code> 的内容，看看有什么变化。而在此情境中，浏览器的 URL“/”等价于“/home/index/”。看到没有，controller 和 route 就是那么赞👍！</p>
+            <h3>结语</h3>
+            <p>我们一起试着去了解怎样搭建一个 ServerHub 应用程序，你学会如何做了嘛？</p>
+            <p>更多指南和文档，请访问<a href="./docs.html">ServerHub 文档集</a>。</p>
+            <hr>
+            <h3>本章贡献</h3>
+            <p>
+                <a href="https://github.com/maoyuyang">雨杨</a> 他首先提出了为 ServerHub 文档增加一个 helloworld 案例的想法，非常感谢！</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
