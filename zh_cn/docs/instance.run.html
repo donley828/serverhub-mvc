@@ -89,9 +89,11 @@ serverhub.Run({
                 <ul>
                     <li>
                         <code>config</code>
-                        <p>此参数定义了服务器的根目录，也就是 <code>app.js</code> 所在的目录。该参数中有一个
+                        <p>此参数定义了服务器的根目录，也就是
+                            <code>app.js</code> 所在的目录。该参数中有一个
                             <code>Controller</code> 属性指定了你要注册的控制器（也就是 controller 目录下的文件）。</p>
-                        <p>ServerHub 在启动时（称作 Compile-time，以后会提到这个词）会尝试找到并解析、注册这些文件。当你写 config 参数时，可以参阅<code>node_modules/serverhub-mvc/index.d.ts</code> 中的类型定义。我使用 TypeScript 来开发，所以在一些现代编辑器中，你可以得到详细的类型推断、提示。此时，你不需要知道太多参数属性的含义，因为它们会在后续的文档中得到解释说明。</p>
+                        <p>ServerHub 在启动时（称作 Compile-time，以后会提到这个词）会尝试找到并解析、注册这些文件。当你写 config 参数时，可以参阅
+                            <code>node_modules/serverhub-mvc/index.d.ts</code> 中的类型定义。我使用 TypeScript 来开发，所以在一些现代编辑器中，你可以得到详细的类型推断、提示。此时，你不需要知道太多参数属性的含义，因为它们会在后续的文档中得到解释说明。</p>
                     </li>
                     <li>
                         <code>route</code>（回调函数形式）
@@ -102,6 +104,10 @@ serverhub.Run({
             </p>
             <p>现在，尝试运行
                 <code>node app.js</code>，ServerHub 会启动并监听 926 端口（是一个生日）。</p>
+            <h3>More about that</h3>
+            <p>请点击
+                <a href="./instance.run-config.html">这个链接</a>来查看关于
+                <code>instance.Run()</code> 方法配置参数的详细介绍。</p>
         </div>
     </main>
     <footer>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Instance.Run() config</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Instance.Run() 参数配置</h2>
+            <p>前些天，我们了解了
+                <code>instance.Run()</code> 方法。本章我们会继续探讨该方法的第一个配置参数：
+                <code>instance.Run()</code> 的配置对象。</p>
+            <h3>越简单越好</h3>
+            <p>与之前我们在
+                <a href="./instance.run.html">Instance.Run()</a> 一章中看到的不同，那个配置对象太复杂了。事实上，只有一个参数是必要的，那就是：
+                <code>BaseDir</code>.</p>
+            <p>
+                <code>BaseDir</code> 是<b>服务器</b>的根目录，它会被 ServerHub 应用程序引用于其生命周期的各个阶段。如果你的入口文件，比如 <code>app.js</code>，刚好位于你的服务器根目录，则只需将 <code>__dirname</code> 传过去即可。</p>
+            <p>这就是能够让你的 ServerHub 应用正常工作的最基本配置了。</p>
+            <h3>其他的配置参数</h3>
+            <p>自定义 ServerHub 时需要一些额外的配置。</p>
+            <h4>
+                <code>WebDir</code>
+            </h4>
+            <p>
+                <code>WebDir</code> 就是你网站的根目录。你的页面文件、资源文件、脚本文件和素材都应该被放在这里面。ServerHub 默认使用“www/”作为其值。如果你要设置一个另外的网站根目录，请先创建一个目录，并将其名字传给 <code>WebDir</code> 属性。</p>
+            <h4>
+                <code>ControllerDir</code>
+            </h4>
+            <p>我们都知道，ServerHub 会把 HTTP 请求分发到 controller 上，如果要注册 controller，就应当指定 controller 所在的目录。所使用的 controller 目录应该是一个相对于服务器根目录的相对路径，ServerHub 中默认用“controller/”。</p>
+            <h4>
+                <code>Controllers</code>
+            </h4>
+            <p>有些情况下，我们不希望 controller 目录下的所有文件都被注册进去（比如你放置了非控制器的文件）。那么此时，可以将所需的文件名通过数组传给此属性。比如：<code>['home.js', 'data.js']</code>。但如果你想把所有的文件都一并注册了，很简单，不要加入此属性即可。ServerHub 会自动扫描并注册<code>ControllerDir</code>中所有文件。</p>
+            <h4>
+                <code>ViewDir</code> 和
+                <code>ModelDir</code>
+            </h4>
+            <p>与 <code>ControllerDir</code> 类似，它们用于存放视图和模型。
+            </p>
+            <h4>
+                <code>DBProvider</code>
+            </h4>
+            <p>通过此属性执行你所需的数据库支持包。当前版本你只可以使用 MySQL，也就是把“mysql”赋值给 <code>DBProvider</code>。</p>
+            <h4>
+                <code>DBConnectionString</code>
+            </h4>
+            <p>如果你只有一个数据库实例要使用，那么我建议你将一个全局数据库连接字符串传入 ServerHub。因为如果你不这样，你就必须要在每次调用 <code>GetConnection()</code> 方法时传入数据库连接字符串。</p>
+            <h4>
+                <code>MaxCacheSize</code>
+            </h4>
+            <p>此属性与 ServerHub 的缓存分配机制有关。如果文件大小超过了此配额，那么 ServerHub 就会通过 WCS 机制来主动卸载一些缓存，这个机制会在后面的章节详谈。</p>
+            <h4>
+                <code>DefaultPages</code>
+            </h4>
+            <p>ServerHub 在处理默认页时引入了一个优先匹配和回滚策略。你的默认页必须放在 <code>WebDir</code> 目录。默认情况下，ServerHub 会首先寻找“index.html”，然后再找“default.html”，如果还是没有，就去寻找“page.html”。当然，你可以用一个形如 <code>['hello.html', 'first.html']</code> 的数组来强制覆盖此回滚策略。</p>
+            <p>感谢阅读本章节，更多属性会在以后的更新中补充。</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
