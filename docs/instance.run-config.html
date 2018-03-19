@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Instance.Run() config</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Instance.Run() Config</h2>
+            <p>The other day, I introduced
+                <code>instance.Run()</code> method to you. And in this chapter, we will talk about the first parameter of
+                <code>instance.Run()</code> method - the configuration object.</p>
+            <h3>As simple as possible</h3>
+            <p>Not like what we've seen in
+                <a href="./instance.run.html">Instance.Run()</a> chapter, the configuraton object is much too complicated. And in fact, there is only one
+                property that is required:
+                <code>BaseDir</code>.</p>
+            <p>
+                <code>BaseDir</code> is the root path of
+                <b>server</b>, which will be used during the whole life circle of your ServerHub application. If your current
+                entry file, such as
+                <code>app.js</code>, is just located in the directory that you want to use as server root. Then the value should be
+                <code>__dirname</code>, which is a global variable of Node.js.</p>
+            <p>This is the simplest configuration that can make ServerHub work functional normally.</p>
+            <h3>Other properties</h3>
+            <p>To customize ServerHub, you need some extra configurations.</p>
+            <h4>
+                <code>WebDir</code>
+            </h4>
+            <p>
+                <code>WebDir</code> is website directory. Your page files, contents, scripts and assets should be put in this directory. ServerHub
+                uses "www/" as its default value. If you want to set up a new website root directory, create a folder and
+                pass its name to
+                <code>WebDir</code> property.</p>
+            <h4>
+                <code>ControllerDir</code>
+            </h4>
+            <p>We all know that ServerHub routes request to controllers. If we want them to be registered, we have to provide
+                the contain directory name to ServerHub. The path of controller directory should be relative to server root
+                path. If you don't specify one, the default value will be "controller/".</p>
+            <h4>
+                <code>Controllers</code>
+            </h4>
+            <p>Sometimes, we don't want to register every controller in the contain folder. Then we can pass an array of required
+                controller file name to this parameter. eg:
+                <code>['home.js', 'data.js']</code>. But if you want all controller files to be registered, just ignore
+                <code>Controllers</code> property and ServerHub will automatically scan and register every file under
+                <code>ControllerDir</code>.
+            </p>
+            <h4>
+                <code>ViewDir</code> and
+                <code>ModelDir</code>
+            </h4>
+            <p>Pretty similar to
+                <code>ControllerDir</code> in previous section. They are used to hold view files and models.
+            </p>
+            <h4>
+                <code>DBProvider</code>
+            </h4>
+            <p>Specify your database provider. In current version, ServerHub only supports MySQL, which means the only valid
+                value would be "mysql".</p>
+            <h4>
+                <code>DBConnectionString</code>
+            </h4>
+            <p>If you have only one database instance to connect, the suggested way is to pass a global database connection
+                string to ServerHub. Because if you don't, you will have to provide a value every time you call
+                <code>GetConnection()</code> method on your database provider.</p>
+            <h4>
+                <code>MaxCacheSize</code>
+            </h4>
+            <p>This specifies how much memory can ServerHub caching system allocate. If file sizes exceeded this limit, then
+                ServerHub will call WCS to unload some unnecessary caches. This will be covered in later chapters.</p>
+            <h4>
+                <code>DefaultPages</code>
+            </h4>
+            <p>ServerHub uses a fallback strategy for default pages. And your default page file must be put under the root of
+                <code>WebDir</code> directory. In default, ServerHub uses "index.html" first, then "default.html" and finally "page.html". You
+                can override this configuration by passing an array like
+                <code>['hello.html', 'first.html']</code> to this property.</p>
+            <p>More property definitions are coming soon.</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
