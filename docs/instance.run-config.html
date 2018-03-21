@@ -98,6 +98,12 @@
                 <code>WebDir</code> directory. In default, ServerHub uses "index.html" first, then "default.html" and finally "page.html". You
                 can override this configuration by passing an array like
                 <code>['hello.html', 'first.html']</code> to this property.</p>
+            <h4>
+                <code>PageNotFound</code>
+                <span class="version-label">v0.0.93+</span>
+            </h4>
+            <p>When the request does not match any resources or route rules, ServerHub will render an error page to the response.
+                From v0.0.93, you can add your custom error page to ServerHub server directory and specify with this property.</p>
             <p>More property definitions are coming soon.</p>
         </div>
     </main>
