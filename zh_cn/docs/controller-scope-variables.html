@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 18, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>控制器作用域变量</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>控制器作用域变量</h2>
+            <p>在以往的章节中，我们提到过控制其作用域变量。现在我们再多了解一些细节，这样将来就能最大程度发挥其力量。</p>
+            <h3>
+                <code>this.View</code>
+            </h3>
+            <p>
+                <code>this.View</code> 是一个动态函数，它的返回值是根据当前派发的作用域而绑定的模型数据。</p>
+            <p>在每一个 controller 的 action 动作方法中，调用
+                <code>this.View()</code> 能够返回绑定的模型对象。你可以轻轻松松改变它的值，然后在方法的最后把修改后的值返回。这样一来 ServerHub 就会自动渲染新的值，形成新的页面。</p>
+            <hr>
+            <h3>
+                <code>this.Runtime.DBProvider</code>
+            </h3>
+            <p>如果你将下面的这个对象传入了
+                <code>ServerHub.Run()</code> 的第一个参数，那么 ServerHub 会自动将 MySQLProvider 接入和绑定在内部的 DBProvider 对象上（来源于
+                <code>lib/core/database/mysql</code>）。以后每次要触发 action 方法的时候，ServerHub 就会自动将 DBProvider 的一个实例附加到“this”指针所指示的对象上。这样你就能在自己的 action 方法中愉快的调用了。</p>
+            <p>
+                <pre><code class="js">var config = {
+    BaseDir: __dirname,
+    DBConnectionString: 'host=localhost;user=zhongdongy;password=yang'
+}</code></pre>
+            </p>
+            <h4>> 实例方法</h4>
+            <h5>
+                <code>DBProviderInstance.GetConnection(config?): DBConnection</code>
+            </h5>
+            <p>通常，上述的 <code>config</code> 参数并不是必须的。如果你已经在全局配置中传入了 <code>DBConnectionString</code> 参数，则就不需要 config 参数了。但如果没有的话，你每一次使用此方法都必须传入数据库连接所需的信息。</p>
+            <p>
+                <pre><code class="js">{
+    Host: 'localhost',
+    Username: 'wangzhe_xu',
+    Password: 'yang'
+}</code></pre>
+            </p>
+            <p>而此函数的返回值，
+                <code>DBConnection</code>，其实并没有什么确定的类型。如果你用的是 MySQL 数据库连接提供器，则返回值类型可以参考 <a href="https://www.npmjs.com/package/mysql#establishing-connections">npm/mysql</a>。（将来再更新对其他的 database provider 支持时，可以在这里看到相应的链接）</p>
+            <hr>
+            <h3>
+                <code>this.Runtime.FileHelper</code>
+            </h3>
+            <p><code>FileHelper</code> 是一个静态类，它提供简单的文件访问支持。请记住，永远不要尝试将此类实例化来使用。</p>
+            <h4>> 属性</h4>
+            <h5>
+                <code>ServerDirectory: string</code>
+            </h5>
+            <p>提供对“服务器工作目录”的只读访问。这不会影响到服务器内部的环境变量。</p>
+            <h5>
+                <code>WebRoot: string</code>
+            </h5>
+            <p>获取服务器的 web 目录地址。例如：<code>www/</code>
+            </p>
+            <h5>
+                <code>NodeFS: Object</code>
+            </h5>
+            <p>这是对原生 Node.js 的“fs”模块的引用。</p>
+            <h5>
+                <code>NodePath: Object</code>
+            </h5>
+            <p>这是对原生 Node.js 的“path”模块的引用。</p>
+            <h4>> 方法</h4>
+            <p>注意，所有的方法都是静态的，如果你尝试使用构造函数，ServerHub 会抛异常。</p>
+            <h5>
+                <code>static ResolveWebPath(...string): string</code>
+            </h5>
+            <p>解析相对 web 目录的物理路径。</p>
+            <h5>
+                <code>static ResolveServerPath(...string): string</code>
+            </h5>
+            <p>解析相对 ServerHub 运行目录的物理路径。</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

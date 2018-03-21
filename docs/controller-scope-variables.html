@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 18, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Controller Scope Variables</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Controller Scope Variables</h2>
+            <p>We've introduced controller scope variables in previous chapters. Here we will look deeper into them and make
+                the full use of these magic variables.</p>
+            <h3>
+                <code>this.View</code>
+            </h3>
+            <p>
+                <code>this.View</code> is a function, and it returns the loaded model of the corresponding controller.</p>
+            <p>In your action methods, call
+                <code>this.View()</code> can return the object and you can easily modify its value. After modification, just return the new value
+                to action method caller and ServerHub will automatically render with new model.</p>
+            <hr>
+            <h3>
+                <code>this.Runtime.DBProvider</code>
+            </h3>
+            <p>If you pass the following object as the first configuration parameter to
+                <code>ServerHub.Run()</code> method, ServerHub will automatically link MySQLProvider (
+                <code>lib/core/database/mysql</code>). Then every time there is a request hit an action, ServerHub will attach an instance of the DBProvider
+                to
+                <code>this.Runtime.DBProvider</code> property. So you can access to that object in you action code.</p>
+            <p>
+                <pre><code class="js">var config = {
+    BaseDir: __dirname,
+    DBConnectionString: 'host=localhost;user=zhongdongy;password=yang'
+}</code></pre>
+            </p>
+            <h4>> methods</h4>
+            <h5>
+                <code>DBProviderInstance.GetConnection(config?): DBConnection</code>
+            </h5>
+            <p>Normally, the
+                <code>config</code> parameter is optional. If you have provided
+                <code>DBConnectionString</code> in global configuration, then it is not required. But if not, you must specify one like:</p>
+            <p>
+                <pre><code class="js">{
+    Host: 'localhost',
+    Username: 'wangzhe_xu',
+    Password: 'yang'
+}</code></pre>
+            </p>
+            <p>The return value,
+                <code>DBConnection</code> does not have a specific type definition. If you use MySQL database provider, then please read:
+                <a href="https://www.npmjs.com/package/mysql#establishing-connections">npm/mysql</a>. (When other providers are supported, you will see links here)</p>
+            <hr>
+            <h3>
+                <code>this.Runtime.FileHelper</code>
+            </h3>
+            <p>The FileHelper is a static class which provides simple file access operations for controller actions. Please
+                remember, you should never initialize the FileHelper with calling its constructor.</p>
+            <h4>> properties</h4>
+            <h5>
+                <code>ServerDirectory: string</code>
+            </h5>
+            <p>Provide readonly access to server working directory. This will not affect server environment variables.</p>
+            <h5>
+                <code>WebRoot: string</code>
+            </h5>
+            <p>Provide readonly access to server web directory. eg:
+                <code>www/</code>
+            </p>
+            <h5>
+                <code>NodeFS: Object</code>
+            </h5>
+            <p>This is just a reference to original Node.js 'fs' module.</p>
+            <h5>
+                <code>NodePath: Object</code>
+            </h5>
+            <p>This is just a reference to vanilla Node.js 'path' module.</p>
+            <h4>> methods</h4>
+            <p>Please notice: all methods should be used statically, if you try to call FileHelper's constructor, there will
+                be an error thrown.</p>
+            <h5>
+                <code>static ResolveWebPath(...string): string</code>
+            </h5>
+            <p>Resolve virtual web path to actual physical path.</p>
+            <h5>
+                <code>static ResolveServerPath(...string): string</code>
+            </h5>
+            <p>Resolve virtual server path to actual physical path.</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
