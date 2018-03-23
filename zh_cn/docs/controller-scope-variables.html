@@ -53,7 +53,9 @@
             <h5>
                 <code>DBProviderInstance.GetConnection(config?): DBConnection</code>
             </h5>
-            <p>通常，上述的 <code>config</code> 参数并不是必须的。如果你已经在全局配置中传入了 <code>DBConnectionString</code> 参数，则就不需要 config 参数了。但如果没有的话，你每一次使用此方法都必须传入数据库连接所需的信息。</p>
+            <p>通常，上述的
+                <code>config</code> 参数并不是必须的。如果你已经在全局配置中传入了
+                <code>DBConnectionString</code> 参数，则就不需要 config 参数了。但如果没有的话，你每一次使用此方法都必须传入数据库连接所需的信息。</p>
             <p>
                 <pre><code class="js">{
     Host: 'localhost',
@@ -62,12 +64,19 @@
 }</code></pre>
             </p>
             <p>而此函数的返回值，
-                <code>DBConnection</code>，其实并没有什么确定的类型。如果你用的是 MySQL 数据库连接提供器，则返回值类型可以参考 <a href="https://www.npmjs.com/package/mysql#establishing-connections">npm/mysql</a>。（将来再更新对其他的 database provider 支持时，可以在这里看到相应的链接）</p>
+                <code>DBConnection</code>，其实并没有什么确定的类型。如果你用的是 MySQL 数据库连接提供器，则返回值类型可以参考
+                <a href="https://www.npmjs.com/package/mysql#establishing-connections">npm/mysql</a>。（将来再更新对其他的 database provider 支持时，可以在这里看到相应的链接）</p>
+            <hr>
+            <h3>
+                <code>this.Runtime.WAIT</code>
+            </h3>
+            <p>强制 ServerHub 保持连接，直到异步操作完成或回调执行完毕手动关闭。</p>
             <hr>
             <h3>
                 <code>this.Runtime.FileHelper</code>
             </h3>
-            <p><code>FileHelper</code> 是一个静态类，它提供简单的文件访问支持。请记住，永远不要尝试将此类实例化来使用。</p>
+            <p>
+                <code>FileHelper</code> 是一个静态类，它提供简单的文件访问支持。请记住，永远不要尝试将此类实例化来使用。</p>
             <h4>> 属性</h4>
             <h5>
                 <code>ServerDirectory: string</code>
@@ -76,7 +85,8 @@
             <h5>
                 <code>WebRoot: string</code>
             </h5>
-            <p>获取服务器的 web 目录地址。例如：<code>www/</code>
+            <p>获取服务器的 web 目录地址。例如：
+                <code>www/</code>
             </p>
             <h5>
                 <code>NodeFS: Object</code>
