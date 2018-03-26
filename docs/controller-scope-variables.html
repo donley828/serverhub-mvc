@@ -72,7 +72,7 @@
                 <a href="https://www.npmjs.com/package/mysql#establishing-connections">npm/mysql</a>. (When other providers are supported, you will see links here)</p>
             <hr>
             <h3><code>this.Runtime.WAIT</code></h3>
-            <p>A signal to notice ServerHub to hold the connection till operations done.</p>
+            <p>A signal to notice ServerHub to hold the connection till operations done. Sometimes, for example connecting to databases or making HTTP requests, we need to use asynchronous operations. Callback functions, Promise and other ways. If you don't explicitly assign <code>true</code> for this controller scope variable, ServerHub will end waiting and immediately write content to responses. Do <b>NOT</b> forget to assign <code>false</code> to cancel waiting and start to write response.</p>
             <hr>
             <h3>
                 <code>this.Runtime.FileHelper</code>

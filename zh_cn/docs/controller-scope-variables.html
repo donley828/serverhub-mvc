@@ -70,7 +70,7 @@
             <h3>
                 <code>this.Runtime.WAIT</code>
             </h3>
-            <p>强制 ServerHub 保持连接，直到异步操作完成或回调执行完毕手动关闭。</p>
+            <p>强制 ServerHub 保持连接，直到异步操作完成或回调执行完毕手动关闭。举个例子，有时候你会需要连接数据库或者发起 HTTP 等请求，这些情况下会需要用到异步操作。但是如果你不显式将此控制器作用域变量设定为 <code>true</code>，则 ServerHub 会在执行完当前函数帧之后立即停止等待并将内容（可能为空）写入响应。千万不要忘记用 <code>false</code> 重新赋值来取消等待并写入响应。</p>
             <hr>
             <h3>
                 <code>this.Runtime.FileHelper</code>
