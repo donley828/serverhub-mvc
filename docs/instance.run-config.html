@@ -105,6 +105,18 @@
             <p>When the request does not match any resources or route rules, ServerHub will render an error page to the response.
                 From v0.0.93, you can add your custom error page to ServerHub server directory and specify with this property.</p>
             <p>More property definitions are coming soon.</p>
+            <h4>
+                <code>AsyncOperationTimeout</code>
+                <span class="version-label">v0.0.97+</span>
+            </h4>
+            <p>In
+                <span class="version-label">v0.0.96</span>, we introduced
+                <code>this.Runtime.WAIT</code> signal to be the workaroud for some time consuming asynchronous operations, such as database query etc.
+                But you should know this signal is pretty dangrous. What if you forget to set
+                <code>false</code> to it or the operation takes too much time and dead before callback? So, ServerHub has to count down as
+                a backup operation if it cost too much time. The default value is 10 seconds. If you want it to be shorter
+                or longer, just pass the value to the configuration parameter.(Unit:
+                <b>milliseconds</b>)</p>
         </div>
     </main>
     <footer>
