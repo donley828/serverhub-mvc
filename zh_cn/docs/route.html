@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 18, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Route 路由</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Route</h2>
+            <p>Route 是 ServerHub 的核心之一。有了路由，所有的 HTTP 请求都可以被过滤并发往正确的处理程式（比如控制器和缓存命中器）。举个例子，
+                <code>/index.html</code> 可能是一个静态页面，但
+                <code>/home/index</code> 却可能是一个控制器的 URL。ServerHub 的路由系统提供了两种手段来处理这些 URL 的分辨问题。一个叫做正路由，而另一个叫反路由。</p>
+            <h3>正路由规则</h3>
+            <p>正路由看起来就像是 ES6 当中的字符串模板语法，你可以看到成对的花括号。每一对括号之间是路由规则的一个段。而合法的段有如下几种：
+                <b>controller</b>,
+                <b>action</b> 和
+                <b>id</b>。举个例子：
+                <code>"api/{controller}/{action}/{id}"</code>。</p>
+            <p>而前缀
+                <code>api</code> 则是一个普通的文本。每个请求要想匹配上述规则，就一定要加上这样一个前缀。</p>
+            <p>
+                <code>controller</code> 是控制器的名称，恰恰就是控制器文件的名字。</p>
+            <p>
+                <code>action</code> 是控制器脚本中定义的函数成员（属性）。</p>
+            <p>下面举一些例子（假设你已经在项目写好了一个带有
+                <i>index/info</i> 方法的控制器
+                <i>home</i>）：</p>
+            <ul>
+                <li>
+                    <p>能被匹配的请求：</p>
+                    <ul>
+                        <li>/api/home/index</li>
+                        <li>/api/home/info/</li>
+                        <li>/api/home/index/5</li>
+                        <li>/api/home/index/5?name=xu_wangzhe</li>
+                        <li>/api/home/index/?name=xu_wangzhe</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>不能被匹配的请求：</p>
+                    <ul>
+                        <li>/home/index</li>
+                        <li>/api/home/index.html</li>
+                        <li>/api/home/5</li>
+                        <li>/api/index/5?name=xu_wangzhe</li>
+                        <li>/api/home-foo/index/?name=xu_wangzhe</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>如果请求的路径不能匹配这一路由规则，那么 ServerHub 会将其当作是对静态资源的请求，会触发 Cache 系统来加载、缓存。</p>
+            <p>如何指定正路由呢？请看下例：</p>
+            <p>
+                <pre><code class="js">(route) => {
+    route.MapRoute('default', 'v1/{controller}/{action}/{id}');
+}</code></pre>
+            </p>
+            <p>将这个匿名函数传入
+                <code>instance.Run()</code> 方法的第二参数即可。</p>
+            <h3>反路由规则</h3>
+            <p>
+                <b>反路由规则永远会在正路由被检查之前先被执行</b>！如果任何请求匹配了反路由，则永远不会再进行正匹配，也就是会立即被作为静态资源请求被处理。</p>
+            <p>反路由规则
+                <b>同时</b>支持字符串定义和正则表达式定义。你只需提供一个包含反路由的数组就可以了。</p>
+            <p>下面给出几个例子：</p>
+            <p>
+                <ul>
+                    <li>
+                        <p>字符串规则的例子</p>
+                        <p>
+                            <pre><code class="js">route.IgnoreRoute(['/language/all']);</code></pre>
+                        </p>
+                        <p>如你所见，
+                            <code>language</code> 控制器可能会有
+                            <code>english</code> 和
+                            <code>chinese</code> 方法，但是却没有定义
+                            <code>all</code> 方法。如果 ServerHub 试图根据某一次匹配而触发这个函数，则会产生异常。所以我们需要用这个来屏蔽掉这不科学的 URL 请求（改为指向静态资源）。</p>
+                    </li>
+                    <li>
+                        <p>正则表达式案例</p>
+                        <p>
+                            <pre><code class="js">route.IgnoreRoute([/^\/no-route.*$/i]);</code></pre>
+                        </p>
+                        <p>假如你想要完全屏蔽所有以“no-route”开头的请求怎么办？难道要把所有可能都写出来吗？显然是不现实的。所以我们直接将正则表达式传入该方法，进而将所有以“no-route”为前缀（无论大小写）的请求都屏蔽。</p>
+                    </li>
+                    <li>
+                        <p>混合规则</p>
+                        <p>
+                            <pre><code class="js">route.IgnoreRoute(['/language/all', /^\/no-route.*$/i]);</code></pre>
+                        </p>
+                    </li>
+                </ul>
+            </p>
+            <h3>URL 中的查询</h3>
+            <p>根据
+                <a href="https://tools.ietf.org/html/rfc1738">RFC 1738</a>，一个合法的 URL 查询是这样定义的：</p>
+            <p>
+                <pre><code>search         = *[ uchar | ";" | ":" | "@" | "&amp;" | "=" ]
+uchar          = unreserved | escape
+unreserved     = alpha | digit | safe | extra
+alpha          = lowalpha | hialpha
+lowalpha       = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" |
+                 "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" |
+                 "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |
+                 "y" | "z"
+hialpha        = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" |
+                 "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" |
+                 "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+digit          = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" |
+                 "8" | "9"
+safe           = "$" | "-" | "_" | "." | "+"
+extra          = "!" | "*" | "'" | "(" | ")" | ","
+escape         = "%" hex hex
+hex            = digit | "A" | "B" | "C" | "D" | "E" | "F" |
+                 "a" | "b" | "c" | "d" | "e" | "f"</code></pre>
+            </p>
+            <p>具体一点，ServerHub 限制了：</p>
+            <p>
+                <ul>
+                    <li>
+                        <code>?</code> 作为查询的开始符。</li>
+                    <li>
+                        <code>=</code> 前面的标识符是查询的键。</li>
+                    <li>
+                        <code>=</code> 后面的标识符是查询的值。</li>
+                    <li>所有的查询由
+                        <code>&amp;</code> 作为分隔符。</li>
+                </ul>
+            </p>
+            <p>请一定遵循上述规则，因为后续版本的 ServerHub 很可能会强制忽略掉不符合该规则的查询串导致你的应用程序无法正常工作。</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

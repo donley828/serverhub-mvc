@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 18, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Route</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Route</h2>
+            <p>Route is one of ServerHub's core features. With route, all HTTP request can be filtered and send to correct handlers.
+                For example,
+                <code>/index.html</code> might be a static webpage, but
+                <code>/home/index</code> could be a controller URL. ServerHub's route system provide two ways to deal with it. One is called positive
+                rules and the other one is called negative rules.</p>
+            <h3>Positive rules</h3>
+            <p>Positive rules looks like JavaScript string formatting. There are several '{' and '}' symbols in the rule content.
+                Between each pair of parenthess lies the segment name of rule syntax. Valid segment names are:
+                <b>controller</b>,
+                <b>action</b> and
+                <b>id</b>. For example:
+                <code>"api/{controller}/{action}/{id}"</code>.</p>
+            <p>Prefix
+                <code>api</code> is a normal string. Every request that matches the rule should start with this prefix.</p>
+            <p>
+                <code>controller</code> is the name of controller, which is right the name of the controller file.</p>
+            <p>
+                <code>action</code> is the function property defined in controller scripts.</p>
+            <p>Here we have some examples (assuming that you have
+                <i>home controller</i> with
+                <i>index/info</i> actions in your project):</p>
+            <ul>
+                <li>
+                    <p>Valid request path</p>
+                    <ul>
+                        <li>/api/home/index</li>
+                        <li>/api/home/info/</li>
+                        <li>/api/home/index/5</li>
+                        <li>/api/home/index/5?name=xu_wangzhe</li>
+                        <li>/api/home/index/?name=xu_wangzhe</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Invalid request path</p>
+                    <ul>
+                        <li>/home/index</li>
+                        <li>/api/home/index.html</li>
+                        <li>/api/home/5</li>
+                        <li>/api/index/5?name=xu_wangzhe</li>
+                        <li>/api/home-foo/index/?name=xu_wangzhe</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Request paths that does not match the route rule will be treated as requests to static resources.</p>
+            <p>But how to set positive rule? Look at this:</p>
+            <p>
+                <pre><code class="js">(route) => {
+    route.MapRoute('default', 'v1/{controller}/{action}/{id}');
+}</code></pre>
+            </p>
+            <p>Pass this annoymous function as the second parameter of
+                <code>instance.Run()</code> method.</p>
+            <h3>Negative rules</h3>
+            <p>
+                <b>Negative rules are checked before positive rules</b>. If any request path matched any negative rule, it will
+                immediately be treated as static resources.</p>
+            <p>Negative rules support
+                <b>both</b> string rule definition and regular expressions. An array is used to contain all the rules needed.</p>
+            <p>Here are three examples:</p>
+            <p>
+                <ul>
+                    <li>
+                        <p>String rule example</p>
+                        <p>
+                            <pre><code class="js">route.IgnoreRoute(['/language/all']);</code></pre>
+                        </p>
+                        <p>As you can see. The
+                            <code>language</code> controller may have
+                            <code>english</code> and
+                            <code>chinese</code> actions, but
+                            <code>all</code> is not an action. If we don't ignore this route, ServerHub will try to seek for action named
+                            <code>all</code>, which will fire an exception. So, we use this string rule to ignore specific request path.</p>
+                    </li>
+                    <li>
+                        <p>Regular expression example</p>
+                        <p>
+                            <pre><code class="js">route.IgnoreRoute([/^\/no-route.*$/i]);</code></pre>
+                        </p>
+                        <p>What if want to ignore all routes that start with "no-route"? Should we write every possibilities?
+                            Of course, that is not possible. So we use the regular expression above to ignore all request
+                            with prefix "no-route" (upper-case or lower-case)</p>
+                    </li>
+                    <li>
+                        <p>Multiple negative rules</p>
+                        <p>
+                            <pre><code class="js">route.IgnoreRoute(['/language/all', /^\/no-route.*$/i]);</code></pre>
+                        </p>
+                    </li>
+                </ul>
+            </p>
+            <h3>Search/Query in URL</h3>
+            <p>According to
+                <a href="https://tools.ietf.org/html/rfc1738">RFC 1738</a>, a valid search in URL is defined as follows:</p>
+            <p>
+                <pre><code>search         = *[ uchar | ";" | ":" | "@" | "&amp;" | "=" ]
+uchar          = unreserved | escape
+unreserved     = alpha | digit | safe | extra
+alpha          = lowalpha | hialpha
+lowalpha       = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" |
+                 "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" |
+                 "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" |
+                 "y" | "z"
+hialpha        = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" |
+                 "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" |
+                 "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+digit          = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" |
+                 "8" | "9"
+safe           = "$" | "-" | "_" | "." | "+"
+extra          = "!" | "*" | "'" | "(" | ")" | ","
+escape         = "%" hex hex
+hex            = digit | "A" | "B" | "C" | "D" | "E" | "F" |
+                 "a" | "b" | "c" | "d" | "e" | "f"</code></pre>
+            </p>
+            <p>More specificly, ServerHub allows:</p>
+            <p>
+                <ul>
+                    <li>
+                        <code>?</code>as the start of a search/query.</li>
+                    <li>Identifier before
+                        <code>=</code> is used as search key.</li>
+                    <li>Identifier after
+                        <code>=</code> is used as search value.</li>
+                    <li>Search items use
+                        <code>&amp;</code> as delimiter.</li>
+                </ul>
+            </p>
+            <p>Please always obey the above rules, later versions of ServerHub might eable "strict mode" to force ignore search/query
+                with invalid characters.</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

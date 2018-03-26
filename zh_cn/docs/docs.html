@@ -14,6 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>文档与指南</title>
     <link rel="stylesheet" href="../../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 </head>
@@ -31,7 +32,7 @@
                 <i>本页面仍在完善中，文档的草案在 master/doc 可以找到。</i>
             </h3>
             <p>
-                <span class="version-label">最新更新 v0.0.93</span>
+                <span class="version-label">基于 v0.0.97 更新</span>
 
             </p>
             <h2>指南</h2>
@@ -43,18 +44,39 @@
             </p>
             <hr>
             <h2>开发文档 </h2>
-            <p>
-                <a href="./instance.run.html">ServerHub.Run()</a>
-            </p>
-            <p>
-                <a href="./instance.run-config.html">ServerHub.Run() 配置参数</a>
-            </p>
-            <p>
-                <a href="./controllers.html">Controller 控制器</a>
-            </p>
-            <p>
-                <a href="./controller-scope-variables.html">控制器作用域变量</a>
-            </p>
+            <ul class='no-list-style'>
+                <li>
+                    <p>
+                        <code>Run()</code> 模块方法</p>
+                    <ul class='no-list-style'>
+                        <li>
+                            <a href="./instance.run.html">ServerHub.Run()</a>
+                        </li>
+                        <li>
+                            <a href="./instance.run-config.html">ServerHub.Run() 配置参数</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Controller</p>
+                    <ul class='no-list-style'>
+                        <li>
+                            <a href="./controllers.html">Controller 控制器</a>
+                        </li>
+                        <li>
+                            <a href="./controller-scope-variables.html">控制器作用域变量</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Route</p>
+                    <ul class='no-list-style'>
+                        <li>
+                            <a href="./route.html">Route 路由</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     </main>
     <footer>

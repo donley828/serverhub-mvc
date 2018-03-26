@@ -14,6 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Controllers</title>
     <link rel="stylesheet" href="../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 </head>
@@ -54,16 +55,21 @@ return {
                 tools, they could even throw errors. But don't worry, we will talk about this later.</p>
             <p>There are three primary paramters of a controller action method: request, response and method. They are all
                 <b>required</b>.</p>
-            <p>
-                <ul>
-                    <li>
-                        <b>request</b> refers to the IncomingMessage of Node.js.</li>
-                    <li>
-                        <b>response</b> refers to the ServerResponse object of the request.</li>
-                    <li>
-                        <b>method</b> is a string and can be the following: GET, POST, PATCH, UPDATE, DELETE and PUT.</li>
-                </ul>
-            </p>
+            <ul>
+                <li>
+                    <b>request</b> refers to the IncomingMessage of Node.js.</li>
+                <li>
+                    <b>response</b> refers to the ServerResponse (wrapped) object of the request.</li>
+                <li>
+                    <b>method</b> is a string and can be the following: GET, POST, PATCH, UPDATE, DELETE and PUT.</li>
+            </ul>
+            <p>The following two are not required, but can be really useful</p>
+            <ul>
+                <li>
+                    <b>id</b> refers to Id of matched route rule.</li>
+                <li>
+                    <b>search</b> refers to a Search group object (JavaScript Map object).</li>
+            </ul>
             <h2>Compile-time and Static Controllers</h2>
             <p>If you modify any controller files while ServerHub running, check if your browser will show you the latest modifications.
                 There will be no effect when you refresh the web pages. ServerHub loads and registers controllers when the
@@ -82,7 +88,8 @@ return {
                 variables (closure or something else).</p>
 
             <h3>Complete list of supported controller scope variables</h3>
-            <p>Usage of these variables are avaliable in later chapters. Some variables that have primitive types like
+            <p>Usage of these variables are avaliable in later chapters (
+                <a href="./controller-scope-variables.html">controller scope variables</a>). Some variables that have primitive types like
                 <code>string</code>,
                 <code>number</code> etc. (as well as some reference/alias to vanilla Node.js implementation) will not be doced.</p>
             <p>
@@ -102,7 +109,7 @@ return {
                                 <code>this.Runtime.DBProvider</code>
                                 <b>
                                     <i>Object</i>
-                                </b>A reference to initialized database provider instanced (default MySQL).</li>
+                                </b>A reference to initialized database provider instance (default MySQL).</li>
 
                             <li>
                                 <code>this.Runtime.FileHelper</code>

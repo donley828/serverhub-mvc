@@ -14,6 +14,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Controllers</title>
     <link rel="stylesheet" href="../../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 </head>
@@ -51,16 +52,21 @@ return {
             <p>也许你会感到奇怪，为什么 ServerHub 的 controller 是这样的语法：将 return 语句写在了函数体的外面（或者根本没有函数体）。尤其是当你使用 lint 工具时它们还会报错。不要担心，暂时不要纠结，这个问题我们在后面就会讲到。</p>
             <p>在 controller 方法定义中，有三个参数是
                 <b>必须</b>的，它们是：request、response 和 method</p>
-            <p>
-                <ul>
-                    <li>
-                        <b>request</b> 是对 Node.js IncomingMessage 对象的引用，也就是 HTTPRequest。</li>
-                    <li>
-                        <b>response</b> 则是对 ServerResponse 对象的引用，即 HTTPResponse。</li>
-                    <li>
-                        <b>method</b> 则是一个表示当前 HTTPMethod 的参数，其值通常是：GET、POST、PATCH、UPDATE、DELETE 和 PUT。</li>
-                </ul>
-            </p>
+            <ul>
+                <li>
+                    <b>request</b> 是对 Node.js IncomingMessage 对象的引用，也就是 HTTPRequest。</li>
+                <li>
+                    <b>response</b> 则是对 ServerResponse（非完整）对象的引用，即 HTTPResponse。</li>
+                <li>
+                    <b>method</b> 则是一个表示当前 HTTPMethod 的参数，其值通常是：GET、POST、PATCH、UPDATE、DELETE 和 PUT。</li>
+            </ul>
+            <p>下面两个参数不是必须的，但是也非常有用：</p>
+            <ul>
+                <li>
+                    <b>id</b> 是由匹配到的路由中提取出的 id 值。</li>
+                <li>
+                    <b>search</b> 是从 URL 解析出的查询内容，是一个 JavaScript Map 对象。</li>
+            </ul>
             <h2>活跃于 compile-time 和静态的 Controller</h2>
             <p>这里说明一下，compile-time 不能理解为字面的编译过程，而应该理解为 ServerHub 对你的配置进行加载、处理和执行的过程，对应 runtime 则是当 HTTP 请求接入 ServerHub 时产生的一系列动作对应的时机。如果你在
                 compile-time 之后对任何 controller 文件进行了修改，到浏览器刷新看看是否你的修改被应用上了。可以发现，完全没有任何变化。ServerHub 仅仅会在 compile-time 加载和注册
@@ -81,7 +87,8 @@ return {
                 </b> 指针就不会乱掉了。</p>
 
             <h3>当前所有可以使用的 controller 作用域变量：</h3>
-            <p>在以后的章节中会详细介绍这些变量的使用方法，不过一些返回基本值（比如
+            <p>在以后的章节中会详细介绍这些变量的使用方法（
+                <a href="./controller-scope-variables.html">控制器作用域变量</a>），不过一些返回基本值（比如
                 <code>string</code>、
                 <code>number</code> 等等的就不会被包括在内了（还有一些为 Node.js 原生对象的别名也不会赘述）。</p>
             <p>
