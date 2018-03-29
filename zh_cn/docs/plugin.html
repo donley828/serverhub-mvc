@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>插件</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>插件系统简介</h2>
+            <p>
+                <span class="version-label">自 v1.0.0-beta 起可用</span>
+            </p>
+            <p>由于 ServerHub 自身是一个 Web 服务器的基础，而如果你一切从头开始，那么就需要应付一大堆非常基本的问题。又因为 ServerHub 会自动将请求派发到相对应的处理机制（比如控制器或缓存命中器），所以你难以对每一个请求的处理函数进行单独操作。这样不仅开发难度高，维护和重构的成本也随程序体量而增加。试想，能否在路由开始之前就进行一些操作呢？比如说权限验证或是请求过滤。抑或在路由完成之后做一些事，比如触发一个统计函数来分析对资源的使用情况……</p>
+            <p>这里，我们将“插件”概念介绍给你。本文所述甚是简单，但是不要错过了打造你的专属插件的好机会！</p>
+            <h3>Plugin 钩子</h3>
+            <p>首先来看一幅顺序图：（你可以右键单独浏览图片，这样清晰度会更高）</p>
+            <p class="image">
+                <img src="../../assets/serverhub-module-plugin-sequence.png" alt="ServerHub Plugin Sequence">
+            </p>
+            <p>我们称其为钩子，但是它看起来更像是一个必须的过程。不过，由于之前版本并未引入这一概念，插件更像是从原来的流程当中强行中断的一部分，所以也就以钩子来称呼了。当某个 HTTP 请求到达 ServerHub 的时候，它会被
+                ServerHub 的 core 模块处理。此时第一阶段插件被激活，待它们处理完毕，core 又会把请求交给 route 模块。Route 完毕得到的结果会被用来激活第二阶段的插件，等到它们也处理完了，这些请求会被
+                core 根据 route 结果派发给对应的处理程式。</p>
+            <p>两个阶段的插件分别是
+                <b>路由前置插件</b> 和
+                <b>路由后置插件</b>。</p>
+            <p>前置插件通常并不关心这个请求会被路由到哪里。它们往往做一些比较全局性的工作，比如全局权限验证。而后置插件往往更关注于请求目标的类型，并针对类型的不同采取不同的措施。</p>
+            <h3>怎样创建一个插件？</h3>
+            <p>插件其实就是完全的 Node.js 模块。它遵循模块的所有准则。但是有些额外的限制：</p>
+            <ul>
+                <li>
+                    <p>合法的插件必须包括一些属性：</p>
+                    <ul>
+                        <li>
+                            <code>app_name</code> 为你的插件取一个独一无二的名字。所有的字母必须小写，并且数字、字母、单独的连词符才是合法的选择。比如
+                            <i>serverhub-plugin-my-filter</i> （注意前缀应该是
+                            <b>serverhub-plugin-</b>）。</li>
+                        <li>
+                            <code>version</code> 插件的版本号。建议按照 NPM 的规范来处理。</li>
+                        <li>
+                            <code>version_support</code> 标记当前插件版本支持的最低 ServerHub 版本号，低于此版本则无法注册成功。</li>
+                        <li>
+                            <code>phase</code> 指明这是一个前置插件还是后置插件。</li>
+                        <li>
+                            <code>main</code> 插件的入口调用函数。对于前置插件，此函数有两个必须参数；后置插件则为三个（第三个是路由的结果）。</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>下面举一个例子</p>
+                    <p>
+                        <pre><code class="js">module.exports = {
+    app_name: 'serverhub-plugin-my-plugin',
+    version: '0.1.0',
+    version_support: '1.0.0-alpha',
+    phase: 'before-route',
+    main: function(req, res) {
+        console.log("Hello, this is my first ServerHub plugin!");
+    }
+}</code></pre>
+                    </p>
+                </li>
+            </ul>
+            <h3>重要提示</h3>
+            <p>创建插件时，下面的内容一定要牢记于心</p>
+            <p>
+                <b>永远不要在插件中试图修改传入
+                    <code>main</code> 函数的参数中的 ServerResponse 对象！</b>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

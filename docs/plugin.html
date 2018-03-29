@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Plugin</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Plugin System Introduction</h2>
+            <p>
+                <span class="version-label">avaliable since v1.0.0-beta</span>
+            </p>
+            <p>As ServerHub is the foundation of a web server, if you start everything from scratch, then you have to handle
+                with plenty of very basic operations. Just because ServerHub automatically route requests to the corresponding
+                handlers (controllers or static cache), you cannot operate on everything seperately. How about doing something
+                right before routing? Like authentication or filtering. And how about doing something after routing? Like
+                triggering a statistic listener that help you analysis system performance.</p>
+            <p>Here, we introduce "plugin" to you. Instructions in this document is pretty simple, but don't miss the chance
+                to build your own plugin!</p>
+            <h3>Plugin hooks</h3>
+            <p>Let's see a picture first. (Tips: right click on the image and choose "open image in new tab" to view high definition
+                image)
+            </p>
+            <p class="image">
+                <img src="../assets/serverhub-module-plugin-sequence.png" alt="ServerHub Plugin Sequence">
+            </p>
+            <p>So, when an HTTP request enters ServerHub, it will be handled with ServerHub core module. Then the first phase
+                of plugins will be activated. After all of them successfully go through the data, ServerHub will call route
+                functions to generate a corresponding
+                <code>RouteResult</code>, which contains information about how the request should be handled (where, who). Next, the other phase
+                of plugins will be activated to operate on the data.</p>
+            <p>The two phase of plugins are
+                <b>before-route plugin</b> and
+                <b>after-route plugin</b>.</p>
+            <p>Before-route plugins usually do not care about where will the request be sent to with route. It can do some global
+                operations like authentication. After-route plugins usually concentrate on one specific kind of different
+                request types. Some receive requests for controllers while others focus on handling cache-able static resources.</p>
+            <h3>How to compose a plugin</h3>
+            <p>A plugin is exactly a Node.js module. It has to obey all the rules for Node.js modules. But here are some limits:</p>
+            <ul>
+                <li>
+                    <p>A valid plugin must have at least the following properties:</p>
+                    <ul>
+                        <li>
+                            <code>app_name</code> A unique name for your plugin. All the letters must be in lower cases. Valid ones include alphanumeric
+                            characters and single dashes, eg:
+                            <i>serverhub-plugin-my-filter</i> (the
+                            <b>serverhub-plugin-</b> prefix is required).</li>
+                        <li>
+                            <code>version</code> Version tag for your plugin. Suggested to follow NPM custom.</li>
+                        <li>
+                            <code>version_support</code> Indicates the least version of ServerHub to run the plugin.</li>
+                        <li>
+                            <code>phase</code> Whether this is a after-route or before-route plugin.</li>
+                        <li>
+                            <code>main</code> Entry function for your plugin. For before-route plugins, 2 parameters are required; for after-route
+                            plugins, 3 parameters are requried.</li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Here is an example</p>
+                    <p>
+                        <pre><code class="js">module.exports = {
+    app_name: 'serverhub-plugin-my-plugin',
+    version: '0.1.0',
+    version_support: '1.0.0-alpha',
+    phase: 'before-route',
+    main: function(req, res) {
+        console.log("Hello, this is my first ServerHub plugin!");
+    }
+}</code></pre>
+                    </p>
+                </li>
+            </ul>
+            <h3>Important things to remember</h3>
+            <p>Keep this in mind:</p>
+            <p>
+                <b>NEVER try to modify response parameter passing to your plugin
+                    <code>main</code> function!</b>
+            </p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>

@@ -209,6 +209,11 @@ main div.content div.nav span {
     font-weight: bold;
 }
 
+main div.content p.image {
+    display: flex;
+    justify-content: center;
+}
+
 main div.content p img {
     transition: box-shadow ease-in-out 200ms;
     box-shadow: 0 2px 9px 0 rgba(0, 0, 0, .3), -1px 0 9px 0 rgba(0, 0, 0, .3);
