@@ -48,4 +48,15 @@ window.onload = function () {
     if (document.querySelector('#nonav') === null)
         content.insertBefore(nav, content.firstChild);
     content.appendChild(div);
+    limitImageHeight();
+    window.addEventListener('resize', ev => {
+        limitImageHeight();
+    })
+}
+
+function limitImageHeight() {
+    let maxHeight = content.getBoundingClientRect().width * 9 / 16;
+    content.querySelectorAll('p.image').forEach(p => {
+        p.style.maxHeight = maxHeight + 'px';
+    });
 }
