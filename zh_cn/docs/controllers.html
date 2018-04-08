@@ -32,7 +32,7 @@
             <p>Controllers 被用来处理访问服务器程序的大多数通过路由选择的请求。当某个特定的路由规则被匹配了，则 ServerHub 会调用该 controller 中的对应 action 方法来处理这个请求，并将处理结果返回给请求者（往往是浏览器）。</p>
             <h3>创建 controllers 文件</h3>
             <p>每个 controller 和 JavaScript 文件形成一一对应的关系。请看这个
-                <code>home.js</code> 自定义 controller 的例子：</p>
+                <code>home.js</code> 自定义 controller 的例子（过时的写法，不再推荐；请阅读最后的控制器语法说明）：</p>
             <p>
                 <pre><code class="js">"use strict";
 
@@ -46,6 +46,23 @@ return {
         return context;
     }
 };</code></pre>
+            </p>
+
+            </p>
+            <p>下面是
+                <b>推荐的</b>写法
+                <span class="version-label">v1.0.3+</span>：</p>
+            <p>
+                <pre><code class="js">module.exports={
+    index: function (req, res, method) {
+        return this.View();
+    },
+    primary: function (req, res, method) {
+        var context = this.View();
+        context.name = 'Ziyuan';
+        return context;
+    }
+}</code></pre>
             </p>
             <p>Controller 文件就是平常却又特殊的 JavaScript 文件。你必须在文件内直接返回一个带有
                 <code>action functions</code> 方法定义的对象。只有这样，当 ServerHub 要派发路由后的请求时，你的自定义 controller 才会被调用到。</p>
@@ -85,7 +102,11 @@ return {
                 <b>
                     <i>this</i>
                 </b> 指针就不会乱掉了。</p>
-
+            <p>
+                如果你在
+                <span class="version-label">v1.0.2</span> 之前就已经用过 ServerHub，那么你很有可能会误认为新的模块加载函数是控制器作用域变量。其实不然，详细信息会在
+                <a href="./module.html">模块</a>相关章节提供描述。
+            </p>
             <h3>当前所有可以使用的 controller 作用域变量：</h3>
             <p>在以后的章节中会详细介绍这些变量的使用方法（
                 <a href="./controller-scope-variables.html">控制器作用域变量</a>），不过一些返回基本值（比如
@@ -214,27 +235,32 @@ return {
             <p>Action 方法名必须是小写的字符组成。你可以使用字母“a”到“z”以及数字和下划线。有一些名字是保留词，你不得在 action 方法名中使用这些值：Runtime、System、Console 或是 View。</p>
             <p>命名的最佳实践是使用简短的单词，推荐你使用动词来命名。每个 action 方法的名字如果超过了 20 个字符，就显得不太妥当。并且希望你注意，今后的版本中，可能会强行限制其长度，那样子将导致为旧版本编写的应用程序无法启动。</p>
             <h2>关于 controller 特殊的语法</h2>
-            <p>前面我们说过，如果你用了 lint 工具，那么 ServerHub 的 controller 文件将会引起一些语法错误。可能它会提示“
-                <i>在函数外使用了 return 语句</i>”。不过其实你所写的是正确的、合法的
-                <b>部分</b> JavaScript 文件。</p>
-            <p>Controllers 脚本其实都是
-                <b>函数</b>，它们并不是完全独立的 JavaScript 函数。当你尝试直接运行 controller 文件时，是不会有效果的。</p>
-            <p>下面举例说明：（
-                <code>home.js</code>）：</p>
-            <p>
-                <pre><code class="js">"use strict";
+            <h3>Old-fashioned way and DEPRECATED since
+                <span class="version-label">v1.0.3</span>
+            </h3>
+            <div class="deprecated">
+
+                <p>前面我们说过，如果你用了 lint 工具，那么 ServerHub 的 controller 文件将会引起一些语法错误。可能它会提示“
+                    <i>在函数外使用了 return 语句</i>”。不过其实你所写的是正确的、合法的
+                    <b>部分</b> JavaScript 文件。</p>
+                <p>Controllers 脚本其实都是
+                    <b>函数</b>，它们并不是完全独立的 JavaScript 函数。当你尝试直接运行 controller 文件时，是不会有效果的。</p>
+                <p>下面举例说明：（
+                    <code>home.js</code>）：</p>
+                <p>
+                    <pre><code class="js">"use strict";
 
 return {
     index: function(req, res, method) {
         return this.View();
     }
 }</code></pre>
-            </p>
-            <p>如果你把这个
-                <code>home.js</code> 当作平常的 JavaScript 文件，那么就还需在 return 语句之外加上一个函数的花括号，像这样：</p>
+                </p>
+                <p>如果你把这个
+                    <code>home.js</code> 当作平常的 JavaScript 文件，那么就还需在 return 语句之外加上一个函数的花括号，像这样：</p>
 
-            <p>
-                <pre><code class='js'>"use strict";
+                <p>
+                    <pre><code class='js'>"use strict";
 
 function (){
     return {
@@ -243,14 +269,14 @@ function (){
         }
     }
 }</code></pre>
-            </p>
-            <p>好了，现在它成了标准的 JavaScript 文件了。</p>
-            <p>但是，不知道你还记不记得
-                <b> controllers 全部都是
-                    <i>函数</i>
-                </b>？这意味着什么？你的 controller 整个就是一个函数，它的隐形边界（文件）就是函数的花括号。所以，如果我们强行加上了花括号，原来的 controller 文件就成了这个样子：</p>
-            <p>
-                <pre><code class="js">function (){
+                </p>
+                <p>好了，现在它成了标准的 JavaScript 文件了。</p>
+                <p>但是，不知道你还记不记得
+                    <b> controllers 全部都是
+                        <i>函数</i>
+                    </b>？这意味着什么？你的 controller 整个就是一个函数，它的隐形边界（文件）就是函数的花括号。所以，如果我们强行加上了花括号，原来的 controller 文件就成了这个样子：</p>
+                <p>
+                    <pre><code class="js">function (){
     "use strict";
         
     function (){
@@ -261,8 +287,30 @@ function (){
         };
     }
 }</code></pre>
+                </p>
+                <p>可见，这里产生了一个多余的函数包围，留它何用？直接去掉就好了。这也就是我们称 ServerHub 的 controller 是“部分 JavaScript 文件”的原因了。</p>
+            </div>
+            <p>不过请不要担心，ServerHub 将会持续支持旧的方式，直到
+                <span class="version-label">v2.0.0</span> 版本（最早）。你将有充分的时间来迁移到新的模块加载语法。</p>
+            <h3>控制器的模块化写法</h3>
+            <p>
+                <b>
+                    <i>石超</i>
+                </b> 曾告诉过我，他的 IDE 在他用“非完全 JavaScript 风格”写控制器时报错了。随着 ServerHub 的开发和完善，原来的那种创作控制器的方法显得难以拓展。所以我使用控制器作用域变量来对一些对象、函数进行引用，从而提供完整的功能支持。说实在的，一开始当所有东西都限制在控制器作用域当中的时候，这种方法其实很有效，也很优美。但是当逐渐拓展到更广的
+                context 中时，就显得复杂和难以拓展了。我不得不重新思考石超的提醒，于是在经过几次修改之后加入了模块化写法的控制器创作方式。</p>
+            <p>新的写法其实非常简单。你只需要把
+                <code>return</code> 换成
+                <code>module.exports = </code> 即可。</p>
+            <p>
+                <b>但是这还不是全部！这还不是全部！这还不是全部！</b>千万不要忘记把文件名的后缀从“.js”改成“.shc.js”：</p>
+            <p>
+                <pre><code class="text">home.js => home.shc.js
+language.js => language.shc.js</code></pre>
             </p>
-            <p>可见，这里产生了一个多余的函数包围，留它何用？直接去掉就好了。这也就是我们称 ServerHub 的 controller 是“部分 JavaScript 文件”的原因了。</p>
+            <p>这是
+                <b>必须</b>进行的，否则 ServerHub 会直接将它作为旧风格加载，并抛出错误。</p>
+            <p>另外，有一点也是你需要注意的：如果你的控制器目录中包含一个以“.shc.js”结尾的文件，则 ServerHub 不会再加载任何旧语法的控制器。所以一定要保证工作空间干干净净。或者呢，就在指定控制器目录的同时（缺省值“controller/”），再显式指明要注册的文件吧，这样一来
+                ServerHub 就会帮你搞定了。</p>
             <h3>本章节特别感谢</h3>
             <p>
                 <a href="https://github.com/ShiChao1996">石超</a> 他提醒了我 controller 文件中的语法问题，非常感谢！</p>

@@ -33,7 +33,8 @@
                 will dispatch correct action method in controllers and return operated data or view to the client.</p>
             <h3>Composing controllers</h3>
             <p>Here is a good example of
-                <code>home.js</code> custom controller:</p>
+                <code>home.js</code> custom controller (old fashioned way and
+                <b>deprecated</b>):</p>
             <p>
                 <pre><code class="js">"use strict";
 
@@ -47,6 +48,21 @@ return {
         return context;
     }
 };</code></pre>
+            </p>
+            <p>And a new
+                <b>suggested</b> way
+                <span class="version-label">v1.0.3+</span>:</p>
+            <p>
+                <pre><code class="js">module.exports={
+    index: function (req, res, method) {
+        return this.View();
+    },
+    primary: function (req, res, method) {
+        var context = this.View();
+        context.name = 'Ziyuan';
+        return context;
+    }
+}</code></pre>
             </p>
             <p>Controller files are plain but special JavaScript files. you must return an object providing
                 <b>action functions</b> to ServerHub. So when ServerHub dispatching after routing, your custom controller actions
@@ -86,6 +102,11 @@ return {
             <p>You are suggested to use
                 <b>arrow functions</b> that accessible since ECMAScript 2015. Or, you may use some workaround to access to those
                 variables (closure or something else).</p>
+            <p>If you've used previous version of ServerHub
+                <span class="version-label">v1.0.2-</span>, you may probably find the newer version of ServerHub provided a way for fast module loading,
+                which looks pretty like controller scope variables. For more information, please go to
+                <a href="module.html">modules.</a>
+            </p>
 
             <h3>Complete list of supported controller scope variables</h3>
             <p>Usage of these variables are avaliable in later chapters (
@@ -221,29 +242,34 @@ return {
             <p>The best practice are using single words as action names, and verbs are prefered. An action name with more 20
                 characters are pretty bad. And you should know that in later versions of ServerHub, maybe there will be an
                 limitation of action name length, which might not run functional normally with your old-fashioned code.</p>
+            <!-- About Controller Syntax -->
             <h2>About Controller Syntax</h2>
-            <p>If you use some lint tools, ServerHub's controller file may report syntax errors. It could tell that
-                <i>"return statement outside function"</i>. But actually they are valid
-                <b>partial</b> JavaScript files.</p>
-            <p>Controllers scripts are all
-                <b>functions</b>, they are not independent JavaScript files. When you try to execute controller files directly,
-                it is not gonna work.</p>
-            <p>Here is an example. We have a controller file like this (
-                <code>home.js</code> ):</p>
-            <p>
-                <pre><code class="js">"use strict";
+            <h3>Old-fashioned way and DEPRECATED since
+                <span class="version-label">v1.0.3</span>
+            </h3>
+            <div class="deprecated">
+                <p>If you use some lint tools, ServerHub's controller file may report syntax errors. It could tell that
+                    <i>"return statement outside function"</i>. But actually they are valid
+                    <b>partial</b> JavaScript files.</p>
+                <p>Controllers scripts are all
+                    <b>functions</b>, they are not independent JavaScript files. When you try to execute controller files directly,
+                    it is not gonna work.</p>
+                <p>Here is an example. We have a controller file like this (
+                    <code>home.js</code> ):</p>
+                <p>
+                    <pre><code class="js">"use strict";
 
 return {
     index: function(req, res, method) {
         return this.View();
     }
 }</code></pre>
-            </p>
-            <p>If you treat this
-                <code>home.js</code> as a plain JavaScript file, there should be curly braces surrounding the return statement. Check this:</p>
+                </p>
+                <p>If you treat this
+                    <code>home.js</code> as a plain JavaScript file, there should be curly braces surrounding the return statement. Check this:</p>
 
-            <p>
-                <pre><code class='js'>"use strict";
+                <p>
+                    <pre><code class='js'>"use strict";
 
 function (){
     return {
@@ -252,17 +278,17 @@ function (){
         }
     }
 }</code></pre>
-            </p>
-            <p>Now, it is an absolute JavaScript file.</p>
-            <p>
-                <b>But, do you remember that our controllers are all
-                    <i>functions</i>
-                </b>? What does this mean? Your whole controller file is a function, and it has invisible boundries which are
-                curly braces. So, if we manually add function definition to controller file, the loaded controller will be
-                like:
-            </p>
-            <p>
-                <pre><code class="js">function (){
+                </p>
+                <p>Now, it is an absolute JavaScript file.</p>
+                <p>
+                    <b>But, do you remember that our controllers are all
+                        <i>functions</i>
+                    </b>? What does this mean? Your whole controller file is a function, and it has invisible boundries which
+                    are curly braces. So, if we manually add function definition to controller file, the loaded controller
+                    will be like:
+                </p>
+                <p>
+                    <pre><code class="js">function (){
     "use strict";
         
     function (){
@@ -273,9 +299,34 @@ function (){
         };
     }
 }</code></pre>
+                </p>
+                <p>As you can see, there is a redundant pair of function braces that should be removed. And this is why we call
+                    ServerHub controllers "partial JavaScript files".</p>
+            </div>
+            <p>But don't worry, ServerHub will continue support legacy ways of controller composing until
+                <span class="version-label">v2.0.0</span> (at least). You still have plenty of time to migrate to the new module style.</p>
+            <h3>Module style of controller composing</h3>
+            <p>
+                <b>
+                    <i>Chao Shi</i>
+                </b> once told me: his IDE has thrown lots of errors when using the partial JavaScript syntax to compose controllers.
+                And with the development and growing of ServerHub, the original way of creating controllers are not so quite
+                easy to extend. So I use controller scope variables to add references of several external objects/functions
+                that can be a workaround. To be honest, it worked pretty fine when everything is restricted inside the controller
+                scope. But when I try to add module support, it became a little bit handy. Things are getting complicated
+                and I've to rethink about the issue Shi told me. So I decided to deprecate the old way of controller designing
+                and introduced a module style.</p>
+            <p>The new way is not difficult at all. It is very similar to the old one while you just need to replace
+                <code>return</code> with
+                <code>module.exports = </code>.</p>
+            <p>
+                <b>BUT that's not everything!</b> Don't forget to rename the file and add '.shc' before extension:</p>
+            <p>
+                <pre><code class="text">home.js => home.shc.js
+language.js => language.shc.js</code></pre>
             </p>
-            <p>As you can see, there is a redundant pair of function braces that should be removed. And this is why we call
-                ServerHub controllers "partial JavaScript files".</p>
+            <p>This is <b>REQUIRED</b>, or ServerHub will load it in compatible mode and throw an error!</p>
+            <p>And there is one more thing you should know. If there is any file named ends with ".shc.js", then ServerHub will ignore all old style controllers! So keep your directory clean.</p>
         </div>
     </main>
     <footer>

@@ -72,8 +72,16 @@
                 <code>DBConnection</code> does not have a specific type definition. If you use MySQL database provider, then please read:
                 <a href="https://www.npmjs.com/package/mysql#establishing-connections">npm/mysql</a>. (When other providers are supported, you will see links here)</p>
             <hr>
-            <h3><code>this.Runtime.WAIT</code></h3>
-            <p>A signal to notice ServerHub to hold the connection till operations done. Sometimes, for example connecting to databases or making HTTP requests, we need to use asynchronous operations. Callback functions, Promise and other ways. If you don't explicitly assign <code>true</code> for this controller scope variable, ServerHub will end waiting and immediately write content to responses. Do <b>NOT</b> forget to assign <code>false</code> to cancel waiting and start to write response.</p>
+            <h3>
+                <code>this.Runtime.WAIT</code>
+            </h3>
+            <p>A signal to notice ServerHub to hold the connection till operations done. Sometimes, for example connecting to
+                databases or making HTTP requests, we need to use asynchronous operations. Callback functions, Promise and
+                other ways. If you don't explicitly assign
+                <code>true</code> for this controller scope variable, ServerHub will end waiting and immediately write content to responses.
+                Do
+                <b>NOT</b> forget to assign
+                <code>false</code> to cancel waiting and start to write response.</p>
             <hr>
             <h3>
                 <code>this.Runtime.FileHelper</code>
@@ -110,6 +118,12 @@
                 <code>static ResolveServerPath(...string): string</code>
             </h5>
             <p>Resolve virtual server path to actual physical path.</p>
+            <hr>
+            <h3>
+                <code>this.shloadFrom</code>&nbsp;etc.
+                <span class="version-label">v1.0.3+</span>
+            </h3>
+            <p>As ServerHub MVC added support for modules in version <span class="version-label">1.0.3</span>, developers can make full use of Node.js modules to enhance and extend their own servers. To simplify your module loading process, we introduced several global functions. In the legacy style of controller composing, those functions are accessible with a reference to <code>this</code>. But they are NOT actually controller scope variables. The documents about them are avaliable at <a href="module.html">modules</a>.</p>
         </div>
     </main>
     <footer>

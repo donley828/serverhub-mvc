@@ -71,7 +71,9 @@
             <h3>
                 <code>this.Runtime.WAIT</code>
             </h3>
-            <p>强制 ServerHub 保持连接，直到异步操作完成或回调执行完毕手动关闭。举个例子，有时候你会需要连接数据库或者发起 HTTP 等请求，这些情况下会需要用到异步操作。但是如果你不显式将此控制器作用域变量设定为 <code>true</code>，则 ServerHub 会在执行完当前函数帧之后立即停止等待并将内容（可能为空）写入响应。千万不要忘记用 <code>false</code> 重新赋值来取消等待并写入响应。</p>
+            <p>强制 ServerHub 保持连接，直到异步操作完成或回调执行完毕手动关闭。举个例子，有时候你会需要连接数据库或者发起 HTTP 等请求，这些情况下会需要用到异步操作。但是如果你不显式将此控制器作用域变量设定为
+                <code>true</code>，则 ServerHub 会在执行完当前函数帧之后立即停止等待并将内容（可能为空）写入响应。千万不要忘记用
+                <code>false</code> 重新赋值来取消等待并写入响应。</p>
             <hr>
             <h3>
                 <code>this.Runtime.FileHelper</code>
@@ -107,6 +109,17 @@
                 <code>static ResolveServerPath(...string): string</code>
             </h5>
             <p>解析相对 ServerHub 运行目录的物理路径。</p>
+            <hr>
+            <h3>
+                <code>this.shloadFrom</code>&nbsp;等等
+                <span class="version-label">v1.0.3+</span>
+            </h3>
+            <p>在 ServerHub MVC 自
+                <span class="version-label">1.0.3</span> 新增模块载入支持后，开发者可以完全使用 Node.js 的模块来发挥服务器的更大潜力。要简化你的模块载入过程，可以使用全局方法来快速加载。如果你使用的是旧的控制器写法，则需要使用
+                <code>this</code> 引用；而如果是新的方法，则既可以用
+                <code>this</code> 引用，也可以直接使用全局变量。但是请记住，即使这些方法使用了
+                <code>this</code> 来载入模块，但是它们仍然不属于控制器作用域变量。更多详细信息，请阅读
+                <a href="module.html">模块</a>相关章节。</p>
         </div>
     </main>
     <footer>
