@@ -101,6 +101,8 @@
                             <code>chinese</code> actions, but
                             <code>all</code> is not an action. If we don't ignore this route, ServerHub will try to seek for action named
                             <code>all</code>, which will fire an exception. So, we use this string rule to ignore specific request path.</p>
+                        <p>One thing that you should know about string negative route rule is: your rules should always start
+                            with '/'.</p>
                     </li>
                     <li>
                         <p>Regular expression example</p>
