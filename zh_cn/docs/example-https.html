@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>你的第一个 HTTPS 站点</title>
+    <link rel="stylesheet" href="../../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>你的第一个 HTTPS 站点</h2>
+            <p>在本教程中，你将会学到如何为 localhost 签署自签名证书，并在 ServerHub 启动你的 HTTPS 服务器。</p>
+            <p>内容导航：</p>
+            <p>
+                <ul>
+                    <li>
+                        <a href="#run-with-certificate">用现有 TLS/SSL 证书启动 ServerHub</a>。
+                    </li>
+                    <li>
+                        <a href="#generate-selfsigned-cert">生成自签名证书</a>。</li>
+                </ul>
+            </p>
+            <h3 id="run-with-certificate">用现有 TLS/SSL 证书启动 ServerHub</h3>
+            <p>如果你从这里开始阅读，那么我们假定你已经有了必须的两个文件：<code>key.pem</code> 和 <code>cert.pem</code>。如果还没有，请先阅读<a href="#generate-selfsigned-cert">这一小节</a>。
+            </p>
+
+            <ul class="reference">
+                <p>
+                    <a href="https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options">Node.js TLS 文档中提到了相关配置参数</a>：
+                </p>
+                <li>
+                    <p>原文采用英文，此处引用意义不大，请跟随上述链接查看。
+                    </p>
+                </li>
+            </ul>
+            <p class="reference">要注意的是，在
+                <span class="version-label">v1.0.6</span> 版本中，ServerHub 不支持带有密码短语的证书！
+                <p>以后的版本中可能会支持带密码保护的证书。
+                    <p>此时，合法的三个属性分别是：
+                        <code>Key</code>、
+                        <code>Cert</code> 和
+                        <code>CA</code>。全部三个属性都接受字符串值。</p>
+                    <p>假设你的私钥和证书都放到了与
+                        <code>app.js</code> 相同的目录，下面的代码展示了你需要在常规
+                        <code>ServerHubInstance.Run()</code> 函数参数中补充的内容：</p>
+                    <p>
+                        <pre><code class="js">TLSOption: {
+    Port: [443],
+    Cert: fs.readFileSync(path.resolve(__dirname, 'localhost.cert.pem')),
+    Key: fs.readFileSync(path.resolve(__dirname, 'localhost.key.pem')),
+    CA: ''
+}</code></pre>
+                    </p>
+                    <p>如你所见，此处也有一个
+                        <code>Port</code> 属性。那么这个和以前那个
+                        <code>Port</code> 有什么区别吗？以前或者说外部的
+                        <code>Port</code> 向 ServerHub 指定了你的服务器需要侦听的端口号。而
+                        <code>TLSOption</code> 中的
+                        <code>Port</code> 则告诉 ServerHub，所有要侦听的端口中，哪些需要使用 HTTPS 方式来连接。此属性接受单个的整数（1-65535），或者数字组成的字符串，抑或一组这样的值。
+                    </p>
+                    <p>现在试着启动 ServerHub，然后用带 HTTPS 前缀的 URL 来访问。通常，这个时候目的达成。</p>
+                    <hr>
+                    <h3 id="generate-selfsigned-cert">生成自签名证书</h3>
+                    <p>这部分内容假设你已经对
+                        <code>TLS/SSL</code>、
+                        <code>HTTPS</code> 和
+                        <code>OpenSSL</code> 有了一些基本的了解。如果还没有，请到
+                        <a href="https://www.google.com/ncr">Google</a> 中搜索。</p>
+                    <p>StackOverflow 中一位开发者给我们展示了一个非常详尽的
+                        <a href="https://stackoverflow.com/questions/10175812/how-to-create-a-self-signed-certificate-with-openssl">案例</a>。下面是你需要做的基本操作：</p>
+                    <p>
+                        <code>step 0</code> 将命令行工具定位到目标目录</p>
+                    <p>
+                        <code>step 1</code> 检查
+                        <code>openssl</code> 工具是否可用。如果你用的是 Windows，那么可能需要使用 git-bash。</p>
+                    <p>
+                        <code>step 2</code> 生成证书
+                        <pre><code class="bash">openssl req -config example-com.conf -new -x509 -sha256 -newkey rsa:2048 -nodes -keyout example-com.key.pem -days 365 -out example-com.cert.pem</code></pre> 在这一步中，你可能需要回答一系列的问题以生成相应的证书。
+                    </p>
+                    <p>
+                        <code>step 3</code> 把生成的文件放到 ServerHub 启动脚本能访问到的地方。比如和
+                        <code>app.js</code> 相同的目录。</p>
+                    <p>现在，你已经成功签署了一个自签名证书。但是当你启动 ServerHub 之后，浏览器访问时可能会提示连接并不安全。不要怕，只是因为你的证书没有经过第三方可信机构的验证罢了。</p>
+                    <p>如果你已经读完了这一小节，那么你可能想
+                        <a href="#run-with-certificate">即可用这个证书启动你的网站</a>。或者可能需要回到
+                        <a href="docs.html">文档列表</a>。</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
