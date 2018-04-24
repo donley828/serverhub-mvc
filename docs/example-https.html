@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+ * ServerHub Doc Page
+ * 
+ * ServerHub MVC Doc, MIT License
+ * March 15, 2018
+ * Yang Zhongdong (yangzd1996@outlook.com)
+ -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Your First HTTPS Site</title>
+    <link rel="stylesheet" href="../contents/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans|Roboto|Roboto+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <div class="serverhub-logo">
+            <img src="../assets/serverhub-compact.png" alt="ServerHub Logo">
+        </div>
+    </header>
+    <main>
+        <div class="content">
+            <h2>Your First HTTPS Site</h2>
+            <p>In this tutorial, you will learn how to generate a self-signed certificate for localhost and start your own web
+                server with HTTPS.</p>
+            <p>Contents in this tutorial:</p>
+            <p>
+                <ul>
+                    <li>
+                        <a href="#run-with-certificate">Run ServerHub with TLS/SSL certificate</a>.
+                    </li>
+                    <li>
+                        <a href="#generate-selfsigned-cert">Generate self-signed certificate</a>.</li>
+                </ul>
+            </p>
+            <h3 id="run-with-certificate">Run ServerHub with existing certificate</h3>
+            <p>If you start from here, we assume that you have already own 2 files:
+                <code>key.pem</code> and
+                <code>cert.pem</code>. If you don't, please read
+                <a href="#generate-selfsigned-cert">this section first</a>.
+            </p>
+
+            <ul class="reference">
+                <p>
+                    From
+                    <a href="https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options">Node.js TLS document</a>:
+                </p>
+                <li>
+                    <p>
+                        <code>cert</code>
+                    </p>
+                    <p>Optional cert chains in PEM format. One cert chain should be provided per private
+                        <code>key</code>. Each cert chain should consist of the PEM formatted certificate for a provided private key, followed
+                        by the PEM formatted intermediate certificates (if any), in order, and not including the root CA
+                        (the root CA must be pre-known to the peer, see
+                        <code>ca</code>). When providing multiple cert chains, they do not have to be in the same order as their private
+                        keys in
+                        <code>key</code>. If the intermediate certificates are not provided, the peer will not be able to validate the certificate,
+                        and the handshake will fail.</p>
+                </li>
+                <li>
+                    <p>
+                        <code>ca</code>
+                    </p>
+                    <p>Optionally override the trusted CA certificates. Default is to trust the well-known CAs curated by Mozilla.
+                        Mozilla's CAs are completely replaced when CAs are explicitly specified using this option. The value
+                        can be a string or Buffer, or an Array of strings and/or Buffers. Any string or Buffer can contain
+                        multiple PEM CAs concatenated together. The peer's certificate must be chainable to a CA trusted
+                        by the server for the connection to be authenticated. When using certificates that are not chainable
+                        to a well-known CA, the certificate's CA must be explicitly specified as a trusted or the connection
+                        will fail to authenticate. If the peer uses a certificate that doesn't match or chain to one of the
+                        default CAs, use the
+                        <code>ca</code> option to provide a CA certificate that the peer's certificate can match or chain to. For self-signed
+                        certificates, the certificate is its own CA, and must be provided.</p>
+                </li>
+                <li>
+                    <p>
+                        <code>key</code>
+                    </p>
+                    <p>Optional private keys in PEM format. PEM allows the option of private keys being encrypted. Encrypted
+                        keys will be decrypted with options.passphrase. Multiple keys using different algorithms can be provided
+                        either as an array of unencrypted key strings or buffers, or an array of objects in the form:
+                        <pre><code class='js'>{
+    pem: string|buffer,
+    passphrase?: string
+}</code></pre>The object form can only occur in an array. object.passphrase is optional. Encrypted keys will be
+                        decrypted with object.passphrase if provided, or options.passphrase if it is not.</p>
+                </li>
+            </ul>
+            <p class="reference">You should notice that in
+                <span class="version-label">v1.0.6</span>, ServerHub only support TLS certificates with
+                <b>NO</b> passphrase!</p> Later versions of ServerHub may support your passphrase secured certificates.
+            <p>So the three acceptable properties are:
+                <code>Key</code>,
+                <code>Cert</code> and
+                <code>CA</code>. All three properties accept string values.</p>
+            <p>Assume that your key and cert files are placed at the same directory as
+                <code>app.js</code>. The following example is part of
+                <code>ServerHubInstance.Run()</code> parameter.</p>
+            <p>
+                <pre><code class="js">TLSOption: {
+    Port: [443],
+    Cert: fs.readFileSync(path.resolve(__dirname, 'localhost.cert.pem')),
+    Key: fs.readFileSync(path.resolve(__dirname, 'localhost.key.pem')),
+    CA: ''
+}</code></pre>
+            </p>
+            <p>As you can see, there is a
+                <code>Port</code> property. What are the differences between this one and the original
+                <code>Port</code> property? Well, original (aka. outter)
+                <code>Port</code> tells ServerHub which port numbers are supposed to be listened. And
+                <code>Port</code> in
+                <code>TLSOption</code> just tells ServerHub which listened port should be connected as HTTPS. This property can be either a number,
+                a numeric string or an array of that.</p>
+            <p>Now try to start ServerHub, and connect URL with "https" prefix. It should work so far.</p>
+            <hr>
+            <h3 id="generate-selfsigned-cert">Generate Self-signed Certificate</h3>
+            <p>This section assume that you have a very basic understanding of
+                <code>TLS/SSL</code>,
+                <code>HTTPS</code> and
+                <code>OpenSSL</code>. If you don't, please search with
+                <a href="https://www.google.com/ncr">Google</a>.</p>
+            <p>A developer from Stackoverflow shows a good
+                <a href="https://stackoverflow.com/questions/10175812/how-to-create-a-self-signed-certificate-with-openssl">example</a>. Here is what you need to do.</p>
+            <p>
+                <code>step 0</code> Switch to the desired directory.</p>
+            <p>
+                <code>step 1</code> Check if
+                <code>openssl</code> is avaliable. If you are using Windows, you may need to use git-bash tool.</p>
+            <p>
+                <code>step 2</code> Create a self signed certificate
+                <pre><code class="bash">openssl req -config example-com.conf -new -x509 -sha256 -newkey rsa:2048 -nodes -keyout example-com.key.pem -days 365 -out example-com.cert.pem</code></pre> And in this step, you may need to answer several questions before openssl successfully generate a cert and
+                a private key.
+            </p>
+            <p>
+                <code>step 3</code> Copy the generated files to where ServerHub can access.</p>
+            <p>Now, you should have successfully generated a self-signed certificate. But after you start your site without
+                failure, your browser may tell that the connection is not secured. It's okay because your certificate is
+                not verified by a trusted authority.</p>
+            <p>If you have finished this section, you may want to
+                <a href="#run-with-certificate">start your first HTTPS website with ServerHub right away</a>. Or you may want to
+                <a href="docs.html">go back to document list</a>.</p>
+        </div>
+    </main>
+    <footer>
+        <span>By
+            <a href="mailto:yangzd1996@outlook.com">DevChache</a> at
+            <a href="https://github.com/DevChache">GitHub</a>,
+            <span class='g800-only'>dedicates to my beloved</span>
+            <span class="s800-only">for beloved</span>
+            <i>Changrui Yang</i>
+        </span>
+    </footer>
+    <script src="../scripts/index.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</body>
+
+</html>
