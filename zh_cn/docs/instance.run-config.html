@@ -54,7 +54,8 @@
                 <code>ControllerDir</code>
             </h4>
             <p>我们都知道，ServerHub 会把 HTTP 请求分发到 controller 上，如果要注册 controller，就应当指定 controller 所在的目录。所使用的 controller 目录应该是一个相对于服务器根目录的相对路径，ServerHub
-                中默认用“controller/”。</p>
+                中默认用“controller/”。
+            </p>
             <h4>
                 <code>Controllers</code>
             </h4>
@@ -98,8 +99,22 @@
                 <span class="version-label">v0.0.97+</span>
             </h4>
             <p>自从
-                <span class="version-label">v0.0.96</span> 引入 <code>this.Runtime.WAIT</code> 信号量之后，我们已经可以在控制器中实现一些耗时的异步操作逻辑，比如数据库查询操作。但是你应该知道，这个信号量其实是非常危险的，因为如果你忘记将其置为 <code>false</code> 或是因为操作太耗时而在中间过程中断开连接，则可能会出现严重的问题（得不到相应，甚至服务器程序崩溃）。所以 ServerHub 内置了倒数计时，如果操作时间超过这个阈值，则会停止等待，立即返回响应（可能是空响应）。在返回响应的同时，还会在服务器端的控制台输出错误信息（此输出特性可能在将来的版本中移除或迁移到日志中）。默认阈值为 10 秒钟，你可以通过将此变量传入来缩短或延长该值。（单位为 <b>毫秒</b>）</p>
+                <span class="version-label">v0.0.96</span> 引入
+                <code>this.Runtime.WAIT</code> 信号量之后，我们已经可以在控制器中实现一些耗时的异步操作逻辑，比如数据库查询操作。但是你应该知道，这个信号量其实是非常危险的，因为如果你忘记将其置为
+                <code>false</code> 或是因为操作太耗时而在中间过程中断开连接，则可能会出现严重的问题（得不到相应，甚至服务器程序崩溃）。所以 ServerHub 内置了倒数计时，如果操作时间超过这个阈值，则会停止等待，立即返回响应（可能是空响应）。在返回响应的同时，还会在服务器端的控制台输出错误信息（此输出特性可能在将来的版本中移除或迁移到日志中）。默认阈值为
+                10 秒钟，你可以通过将此变量传入来缩短或延长该值。（单位为
+                <b>毫秒</b>）</p>
             <p>感谢阅读本章节，更多属性会在以后的更新中补充。</p>
+            <h4>
+                <code>TLSOption</code>
+                <span class="version-label">v1.0.6+</span>
+            </h4>
+            <p>自
+                <span class="version-label">v1.0.6</span> 开始，ServerHub 大大增强了连接安全性。你可以通过此属性来配置 TLS 证书。此属性由 4 个子属性构成：
+                <code>Key: string</code>、
+                <code>Cert: string</code>、
+                <code>CA: string</code> 和
+                <code>Port: Array&lt;string&gt;|Array&lt;number&gt;|number|string</code>。你需要把私钥与证书载入并赋值给上述属性，然后把需要 TLS 连接的端口号指定给 <code>Port</code> 属性。</p>
         </div>
     </main>
     <footer>

@@ -118,6 +118,18 @@
                 a backup operation if it cost too much time. The default value is 10 seconds. If you want it to be shorter
                 or longer, just pass the value to the configuration parameter.(Unit:
                 <b>milliseconds</b>)</p>
+            <h4>
+                <code>TLSOption</code>
+                <span class="version-label">v1.0.6+</span>
+            </h4>
+            <p>Since
+                <span class="version-label">v1.0.6</span>, ServerHub enhanced security with TLS/SSL. You may secure the connection with a
+                <code>TLSOption</code> property. This property has four sub-properties:
+                <code>Key: string</code>,
+                <code>Cert: string</code>,
+                <code>CA: string</code> and
+                <code>Port: Array&lt;string&gt;|Array&lt;number&gt;|number|string</code>. You need to load your private key and certificate files and assign their values to the properties above.
+                And most importantly, you need to specify the port you want to secure.</p>
         </div>
     </main>
     <footer>
