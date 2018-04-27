@@ -194,6 +194,8 @@ exports.Run = (config, appstart) => {
                     key: tls.Key,
                     ca: tls.CA
                 }, (req, res) => {
+                    req['secure'] = true;
+                    req['protocol'] = 'https';
                     try {
                         libcore.RoutePath(req.url, req, res);
                     } catch (error) {
@@ -204,6 +206,8 @@ exports.Run = (config, appstart) => {
                 servers.push(server);
             } else {
                 let server = http.createServer((req, res) => {
+                    req['secure'] = false;
+                    req['protocol'] = 'http';
                     try {
                         libcore.RoutePath(req.url, req, res);
                     } catch (error) {
