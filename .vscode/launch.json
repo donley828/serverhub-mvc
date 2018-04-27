@@ -20,6 +20,9 @@
             "type": "node",
             "request": "launch",
             "name": "Playground",
+            "args": [
+                "--trace-warnings"
+            ],
             "program": "${workspaceFolder}/playground/app.js"
         },
         {
