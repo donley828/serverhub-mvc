@@ -2,3 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const datetime_1 = require("./datetime");
 exports.DateTime = datetime_1.DateTime;
+const number_1 = require("./number");
+exports.HowManyDigits = number_1.HowManyDigits;
+const array_1 = require("./array");
+exports.StringToCharArray = array_1.StringToCharArray;
+const hash_1 = require("./hash");
+exports.RandomChar = hash_1.RandomChar;
+exports.RandomHashTag = hash_1.RandomHashTag;
