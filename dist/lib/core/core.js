@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const controller = require("./controller/index");
+const server_1 = require("./server");
 const error_1 = require("./error/error");
 const nodepath = require("path");
 const fs = require("fs");
@@ -8,6 +9,9 @@ const content_type_1 = require("./content-type");
 const rcs_1 = require("./cache/rcs");
 const index_1 = require("./helper/index");
 const plugin_1 = require("./plugin");
+const log_1 = require("./log");
+const tls = require("tls");
+const util_1 = require("./util");
 const node_version = process.version;
 global['EnvironmentVariables'] = global['EnvironmentVariables'] ? global['EnvironmentVariables'] : {
     ServerBaseDir: __dirname,
@@ -49,9 +53,52 @@ function SetGlobalVariable(variable, value) {
     global['EnvironmentVariables'][variable] = value;
 }
 exports.SetGlobalVariable = SetGlobalVariable;
+let closedSockets = new Array(0);
+let closedTLSSockets = new Array(0);
+function CleanListener(sign) {
+}
 function RoutePath(path, request, response) {
-    response.setHeader('server', `ServerHub/${global['EnvironmentVariables'].PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
-    plugin_1.BeforeRoute(request, response, (requ, resp) => {
+    let responseX = server_1.ServerResponseExtension(response);
+    responseX.setHeader('server', `ServerHub/${global['EnvironmentVariables'].PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
+    let ee = responseX.connection;
+    ee.setMaxListeners(64);
+    let closeListener = () => {
+        log_1.DefaultLogger.LogRequest(request, responseX.statusCode, responseX.contentLength);
+        closeListener['socketType'] === "TLSSocket" ?
+            closedTLSSockets.push(closeListener['signature']) :
+            closedSockets.push(closeListener['signature']);
+    };
+    closeListener['signature'] = util_1.RandomHashTag();
+    closeListener['socketType'] = responseX.connection instanceof tls.TLSSocket ? "TLSSocket" : "Socket";
+    responseX.connection.on("close", closeListener);
+    responseX.on("close", () => {
+    });
+    responseX.on("finish", () => {
+    });
+    process.nextTick(() => {
+        let listeners = responseX.connection.listeners('close');
+        if (!listeners)
+            return;
+        listeners.forEach(lsn => {
+            if (lsn['socketType'])
+                switch (lsn['socketType']) {
+                    case 'Socket': {
+                        if (closedSockets.includes(lsn['signature'])) {
+                            responseX.connection.removeListener('close', lsn);
+                            closedSockets = closedSockets.splice(closedSockets.indexOf(lsn['signature']), 1);
+                        }
+                        break;
+                    }
+                    default: {
+                        if (closedTLSSockets.includes(lsn['signature'])) {
+                            responseX.connection.removeListener('close', lsn);
+                            closedTLSSockets = closedTLSSockets.splice(closedTLSSockets.indexOf(lsn['signature']), 1);
+                        }
+                    }
+                }
+        });
+    });
+    plugin_1.BeforeRoute(request, responseX, (requ, resp) => {
         let routeResult = ROUTE.RunRoute(path);
         plugin_1.AfterRoute(requ, resp, routeResult, (req, res) => {
             if (!routeResult)
@@ -66,7 +113,7 @@ function RoutePath(path, request, response) {
                     if (!res.headersSent)
                         res.setHeader('content-type', 'text/html');
                     if (!res.writable)
-                        res.write(error_1.ErrorManager.RenderErrorAsHTML(error));
+                        res.writeRecord(error_1.ErrorManager.RenderErrorAsHTML(error));
                     res.end();
                 }
             }
@@ -100,7 +147,7 @@ function NoRoute(path, req, res) {
     let filepath = nodepath.resolve(variables.ServerBaseDir, variables.WebDir, path.substr(1));
     if (!path.endsWith('/') && fs.existsSync(filepath)) {
         res.setHeader('content-type', content_type_1.ContentType.GetContentType(filepath.match(/\.[a-z\d]*$/i)[0]));
-        res.write(fs.readFileSync(filepath));
+        res.writeRecord(fs.readFileSync(filepath));
         res.end();
     }
     else {
@@ -111,7 +158,7 @@ function NoRoute(path, req, res) {
             pageNotFound = index_1.CacheHelper.Cache(nodepath.resolve(__dirname, '404.html')).Content;
         else
             pageNotFound = index_1.CacheHelper.Cache(nodepath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content;
-        res.write(pageNotFound);
+        res.writeRecord(pageNotFound);
         res.end();
     }
 }

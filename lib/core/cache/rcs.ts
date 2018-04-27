@@ -15,7 +15,7 @@ import { ContentType } from '../content-type';
 import { CacheHelper, RangeParser } from '../helper';
 import * as npath from 'path';
 import * as nfs from 'fs';
-import { Head } from '../server';
+import { Head, ServerResponseX } from '../server';
 
 interface RangePair {
     Start: number;
@@ -65,7 +65,7 @@ export class RCS {
         }
     }
 
-    public GetUri(uri: string, res: ServerResponse, req: IncomingMessage): void {
+    public GetUri(uri: string, res: ServerResponseX, req: IncomingMessage): void {
         let variables = global['EnvironmentVariables'] as GlobalEnvironmentVariables;
         if (this.Cacheable(uri)) {
             if (uri.endsWith('?'))
@@ -86,7 +86,7 @@ export class RCS {
                     res.setHeader('last-modified', Head.FormatDate(cache.modify_time));
                     res.setHeader('cache-control', 'max-age=604800'); // default for 7 days
                 }
-                res.write(cache.cache);
+                res.writeRecord(cache.cache);
                 res.end();
             }
             else {
@@ -96,9 +96,9 @@ export class RCS {
                 } catch (error) {
                     res.writeHead(404, 'content-type: text/html');
                     if (variables.PageNotFound && variables.PageNotFound.length !== 0)
-                        res.write(CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
+                        res.writeRecord(CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
                     else
-                        res.write(ErrorManager.RenderErrorAsHTML(error));
+                        res.writeRecord(ErrorManager.RenderErrorAsHTML(error));
                     res.end();
                     return;
                 }
@@ -126,9 +126,9 @@ export class RCS {
                     } catch (error) {
                         res.writeHead(404, 'content-type: text/html');
                         if (variables.PageNotFound && variables.PageNotFound.length !== 0)
-                            res.write(CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
+                            res.writeRecord(CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
                         else
-                            res.write(ErrorManager.RenderErrorAsHTML(new Error(ErrorManager.RenderError(RuntimeError.SH020706, uri))));
+                            res.writeRecord(ErrorManager.RenderErrorAsHTML(new Error(ErrorManager.RenderError(RuntimeError.SH020706, uri))));
                         res.end();
                         return;
                     }
@@ -142,7 +142,7 @@ export class RCS {
                             res.setHeader('date', Head.FormatDate());
                             res.setHeader('last-modified', Head.FormatDate(cache.modify_time));
                             res.setHeader('cache-control', 'max-age=604800'); // default for 7 days
-                            res.write(cache.cache);
+                            res.writeRecord(cache.cache);
                             res.end();
                         }
                     }
@@ -174,7 +174,7 @@ export class RCS {
                                 let totalLength = 0;
                                 const streamloop = (index) => {
                                     let stream = nfs.createReadStream(info.Path, parsedRanges[index]);
-                                    res.write(`${index !== 0 ? '\n' : ''}--$serverhubservice\nContent-Type: ${contentType}\nContent-Range: bytes ${parsedRanges[index].start}-${parsedRanges[index].end}/${info.Size}\n`);
+                                    res.writeRecord(`${index !== 0 ? '\n' : ''}--$serverhubservice\nContent-Type: ${contentType}\nContent-Range: bytes ${parsedRanges[index].start}-${parsedRanges[index].end}/${info.Size}\n`);
                                     stream.pipe(res);
                                     stream.on('close', () => {
                                         if (index === count - 1) {
@@ -207,7 +207,7 @@ export class RCS {
         } else throw new Error(ErrorManager.RenderError(RuntimeError.SH020707, uri));
     }
 
-    public GetCacheReport(res: ServerResponse) {
+    public GetCacheReport(res: ServerResponseX) {
         res.setHeader('content-type', "text/html");
         let ret = '';
         let entries = this.CacheManager.CacheReport().entries();
@@ -276,7 +276,7 @@ export class RCS {
         <h2>Cache Usage Report</h2><table border=0><thead><tr><td>URI</td><td>ID</td><td>Weight</td><td>Resource Size</td></tr></thead><tbody>`;
         value += ret;
         value += `</tbody><tr><td colspan=4>Total cache memory usage: ${displaytotal}</td></tr></table><hr/><p class='footer'><span class='framework'>ServerHub</span>&nbsp;<span class='text'>POWERED</span></p></body></html>`;
-        res.write(value);
+        res.writeRecord(value);
         res.end();
     }
 

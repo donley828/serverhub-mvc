@@ -61,7 +61,7 @@ class RCS {
                     res.setHeader('last-modified', server_1.Head.FormatDate(cache.modify_time));
                     res.setHeader('cache-control', 'max-age=604800');
                 }
-                res.write(cache.cache);
+                res.writeRecord(cache.cache);
                 res.end();
             }
             else {
@@ -72,9 +72,9 @@ class RCS {
                 catch (error) {
                     res.writeHead(404, 'content-type: text/html');
                     if (variables.PageNotFound && variables.PageNotFound.length !== 0)
-                        res.write(helper_1.CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
+                        res.writeRecord(helper_1.CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
                     else
-                        res.write(error_1.ErrorManager.RenderErrorAsHTML(error));
+                        res.writeRecord(error_1.ErrorManager.RenderErrorAsHTML(error));
                     res.end();
                     return;
                 }
@@ -103,9 +103,9 @@ class RCS {
                     catch (error) {
                         res.writeHead(404, 'content-type: text/html');
                         if (variables.PageNotFound && variables.PageNotFound.length !== 0)
-                            res.write(helper_1.CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
+                            res.writeRecord(helper_1.CacheHelper.Cache(npath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content);
                         else
-                            res.write(error_1.ErrorManager.RenderErrorAsHTML(new Error(error_1.ErrorManager.RenderError(error_1.RuntimeError.SH020706, uri))));
+                            res.writeRecord(error_1.ErrorManager.RenderErrorAsHTML(new Error(error_1.ErrorManager.RenderError(error_1.RuntimeError.SH020706, uri))));
                         res.end();
                         return;
                     }
@@ -120,7 +120,7 @@ class RCS {
                             res.setHeader('date', server_1.Head.FormatDate());
                             res.setHeader('last-modified', server_1.Head.FormatDate(cache.modify_time));
                             res.setHeader('cache-control', 'max-age=604800');
-                            res.write(cache.cache);
+                            res.writeRecord(cache.cache);
                             res.end();
                         }
                     }
@@ -152,7 +152,7 @@ class RCS {
                                 let totalLength = 0;
                                 const streamloop = (index) => {
                                     let stream = nfs.createReadStream(info.Path, parsedRanges[index]);
-                                    res.write(`${index !== 0 ? '\n' : ''}--$serverhubservice\nContent-Type: ${contentType}\nContent-Range: bytes ${parsedRanges[index].start}-${parsedRanges[index].end}/${info.Size}\n`);
+                                    res.writeRecord(`${index !== 0 ? '\n' : ''}--$serverhubservice\nContent-Type: ${contentType}\nContent-Range: bytes ${parsedRanges[index].start}-${parsedRanges[index].end}/${info.Size}\n`);
                                     stream.pipe(res);
                                     stream.on('close', () => {
                                         if (index === count - 1) {
@@ -259,7 +259,7 @@ class RCS {
         <h2>Cache Usage Report</h2><table border=0><thead><tr><td>URI</td><td>ID</td><td>Weight</td><td>Resource Size</td></tr></thead><tbody>`;
         value += ret;
         value += `</tbody><tr><td colspan=4>Total cache memory usage: ${displaytotal}</td></tr></table><hr/><p class='footer'><span class='framework'>ServerHub</span>&nbsp;<span class='text'>POWERED</span></p></body></html>`;
-        res.write(value);
+        res.writeRecord(value);
         res.end();
     }
     WCS(cache) {

@@ -9,6 +9,7 @@
 import * as controller from './controller/index';
 import { GlobalEnvironmentVariables, TLSConfiguration } from './global';
 import { IncomingMessage, ServerResponse } from 'http';
+import { ServerResponseExtension, ServerResponseX } from './server';
 import { ErrorManager, RuntimeError } from './error/error';
 import * as nodepath from 'path';
 import * as fs from 'fs';
@@ -17,7 +18,12 @@ import { Route } from '../route/route';
 import { RCS } from './cache/rcs';
 import { CacheHelper } from "./helper/index";
 import { BeforeRoute, AfterRoute } from './plugin';
-
+import { DefaultLogger } from './log';
+import * as net from 'net';
+import * as tls from 'tls';
+import { EventEmitter } from 'events';
+import { createHash } from 'crypto';
+import { RandomHashTag } from './util';
 
 const node_version = process.version;
 
@@ -77,6 +83,11 @@ export function UpdateGlobalVariable(variable: string, value: Object): boolean {
 export function SetGlobalVariable(variable: string, value: Object): void {
     global['EnvironmentVariables'][variable] = value;
 }
+let closedSockets = new Array<string>(0);
+let closedTLSSockets = new Array<string>(0);
+function CleanListener(sign): void {
+
+}
 
 /**
  * Route a specific path.
@@ -85,10 +96,51 @@ export function SetGlobalVariable(variable: string, value: Object): void {
  * @param res Server response (response)
  */
 export function RoutePath(path: string, request: IncomingMessage, response: ServerResponse): void {
+    let responseX = ServerResponseExtension(response);
+    responseX.setHeader('server', `ServerHub/${(global['EnvironmentVariables'] as GlobalEnvironmentVariables).PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
+    let ee = responseX.connection as EventEmitter;
+    ee.setMaxListeners(64);
+    let closeListener = () => {
+        DefaultLogger.LogRequest(request, responseX.statusCode, responseX.contentLength);
+        closeListener['socketType'] === "TLSSocket" ?
+            closedTLSSockets.push(closeListener['signature']) :
+            closedSockets.push(closeListener['signature']);
+    };
+    closeListener['signature'] = RandomHashTag();
+    closeListener['socketType'] = responseX.connection instanceof tls.TLSSocket ? "TLSSocket" : "Socket";
+    responseX.connection.on("close", closeListener);
+    responseX.on("close", () => {
+        // error happened
+        // DefaultLogger.LogRequest(request, response.statusCode, response['content-length'] ? parseInt(response['content-length']) : 0);
+    })
+    responseX.on("finish", () => {
+        // no error happened.
+        // DefaultLogger.LogRequest(request, response.statusCode, response['content-length'] ? parseInt(response['content-length']) : 0);
+    });
+    process.nextTick(() => {
+        let listeners = responseX.connection.listeners('close') as Array<(...args) => void>;
+        if (!listeners) return;
+        listeners.forEach(lsn => {
+            if (lsn['socketType'])
+                switch (lsn['socketType']) {
+                    case 'Socket': {
+                        if (closedSockets.includes(lsn['signature'])) {
+                            responseX.connection.removeListener('close', lsn);
+                            closedSockets = closedSockets.splice(closedSockets.indexOf(lsn['signature']), 1);
+                        }
+                        break;
+                    }
+                    default: {
+                        if (closedTLSSockets.includes(lsn['signature'])) {
+                            responseX.connection.removeListener('close', lsn);
+                            closedTLSSockets = closedTLSSockets.splice(closedTLSSockets.indexOf(lsn['signature']), 1);
+                        }
+                    }
+                }
+        })
+    })
 
-    response.setHeader('server', `ServerHub/${(global['EnvironmentVariables'] as GlobalEnvironmentVariables).PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
-
-    BeforeRoute(request, response, (requ, resp) => {
+    BeforeRoute(request, responseX, (requ, resp) => {
         let routeResult = ROUTE.RunRoute(path);
         AfterRoute(requ, resp, routeResult, (req, res) => {
 
@@ -104,7 +156,7 @@ export function RoutePath(path: string, request: IncomingMessage, response: Serv
                     if (!res.headersSent)
                         res.setHeader('content-type', 'text/html');
                     if (!res.writable)
-                        res.write(ErrorManager.RenderErrorAsHTML(error));
+                        res.writeRecord(ErrorManager.RenderErrorAsHTML(error));
                     res.end();
                 }
 
@@ -115,7 +167,7 @@ export function RoutePath(path: string, request: IncomingMessage, response: Serv
     });
 }
 
-function NoRoute(path: string, req: IncomingMessage, res: ServerResponse): void {
+function NoRoute(path: string, req: IncomingMessage, res: ServerResponseX): void {
     let variables = global['EnvironmentVariables'] as GlobalEnvironmentVariables;
 
     if (path === '/') {
@@ -142,7 +194,7 @@ function NoRoute(path: string, req: IncomingMessage, res: ServerResponse): void 
     let filepath = nodepath.resolve(variables.ServerBaseDir, variables.WebDir, path.substr(1));
     if (!path.endsWith('/') && fs.existsSync(filepath)) {
         res.setHeader('content-type', ContentType.GetContentType(filepath.match(/\.[a-z\d]*$/i)[0]));
-        res.write(fs.readFileSync(filepath));
+        res.writeRecord(fs.readFileSync(filepath));
         res.end();
     } else {
         res.setHeader('content-type', 'text/html');
@@ -151,7 +203,7 @@ function NoRoute(path: string, req: IncomingMessage, res: ServerResponse): void 
         if (variables.PageNotFound !== null && variables.PageNotFound.length === 0)
             pageNotFound = CacheHelper.Cache(nodepath.resolve(__dirname, '404.html')).Content;
         else pageNotFound = CacheHelper.Cache(nodepath.resolve(variables.ServerBaseDir, variables.PageNotFound)).Content;
-        res.write(pageNotFound);
+        res.writeRecord(pageNotFound);
         res.end();
     }
 }
