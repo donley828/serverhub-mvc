@@ -6,6 +6,11 @@
  * Yang Zhongdong (yangzd1996@outlook.com)
  */
 
+/**
+ * Provide HTTP head related operations. Use the standard HTTP headers if possible.
+ */
+
+
 import { DateTime } from "../util";
 
 

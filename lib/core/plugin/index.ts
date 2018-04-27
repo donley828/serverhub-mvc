@@ -11,15 +11,16 @@ import Plugin from "./type";
 import { GlobalEnvironmentVariables } from "../global";
 import * as path from 'path';
 import * as fs from 'fs';
-import { IncomingMessage, ServerResponse } from "http";
+import { IncomingMessage } from "http";
 import { RouteValue } from "../../route";
+import { ServerResponseX } from "../server";
 
 const BeforeRoutePlugins = new Array<Plugin>(0);
 const AfterRoutePlugins = new Array<Plugin>(0);
 const RegisteredPlugins = new Array<string>(0);
 
 
-function BeforeRoute(request: IncomingMessage, response: ServerResponse, final: (request: IncomingMessage, response: ServerResponse) => void) {
+function BeforeRoute(request: IncomingMessage, response: ServerResponseX, final: (request: IncomingMessage, response: ServerResponseX) => void) {
     let fi = Promise.all(BeforeRoutePlugins.map((plugin) => {
         plugin.main(request, response);
         if (response.headersSent) {
@@ -32,7 +33,7 @@ function BeforeRoute(request: IncomingMessage, response: ServerResponse, final: 
         console.error('\t' + reason)
     });
 }
-function AfterRoute(request: IncomingMessage, response: ServerResponse, route: RouteValue, final: (request: IncomingMessage, response: ServerResponse) => void) {
+function AfterRoute(request: IncomingMessage, response: ServerResponseX, route: RouteValue, final: (request: IncomingMessage, response: ServerResponseX) => void) {
     let fi = Promise.all(AfterRoutePlugins.map((plugin) => {
         plugin.main(request, response, Object.assign({}, route));
         if (response.headersSent) {
