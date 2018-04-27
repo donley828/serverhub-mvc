@@ -1,3 +1,4 @@
+declare const StatusCode: number[];
 declare function GetReasonMessage(statusCode: number): string;
 interface Headers extends Object {
     'Accept'?: string;
@@ -85,4 +86,4 @@ declare function IsValidHeader(headerStr: string): boolean;
 declare function IsValidHeaders(header: Object): boolean;
 declare function TransformHeader(header: string): string;
 declare function FormatDate(date?: Date): string;
-export { Headers, IsValidHeaders, IsValidHeader, GetReasonMessage, TransformHeader, FormatDate };
+export { Headers, IsValidHeaders, IsValidHeader, GetReasonMessage, TransformHeader, FormatDate, StatusCode };

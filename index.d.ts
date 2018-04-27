@@ -1,5 +1,6 @@
 import { Route } from "./dist/lib/route/route";
 import { TLSConfiguration } from "./dist/lib/core/global";
+import { LogOption } from "./lib/core/global";
 
 export declare function Run(config: ServerHubConfig, appstart: (route: Route) => void): void;
 
@@ -17,8 +18,9 @@ export declare interface ServerHubConfig {
     DBConnectionString: string;
     DefaultPages: Array<string>;
     AsyncOperationTimeout: number;
-    TLSOption: TLSConfiguration;
-    SSLOption: TLSConfiguration;
+    TLSOptions: TLSConfiguration;
+    SSLOptions: TLSConfiguration;
+    LogOptions: LogOption;
 }
 
 export declare function Module(name: string): any;

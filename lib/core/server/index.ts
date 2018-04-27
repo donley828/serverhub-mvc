@@ -6,7 +6,7 @@
  * Yang Zhongdong (yangzd1996@outlook.com)
  */
 
-import { Headers, IsValidHeaders, IsValidHeader, GetReasonMessage, TransformHeader, FormatDate } from "./head";
+import { Headers, IsValidHeaders, IsValidHeader, GetReasonMessage, TransformHeader, FormatDate, StatusCode } from "./head";
 import { ServerResponseExtension, ServerResponseX } from "./response";
 const Head = {
     IsValidHeaders: IsValidHeaders,
@@ -15,4 +15,4 @@ const Head = {
     TransformHeader: TransformHeader,
     FormatDate: FormatDate
 };
-export { Head, Headers, ServerResponseExtension, ServerResponseX };
+export { Head, Headers, ServerResponseExtension, ServerResponseX, StatusCode };

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const head_1 = require("./head");
+exports.StatusCode = head_1.StatusCode;
 const response_1 = require("./response");
 exports.ServerResponseExtension = response_1.ServerResponseExtension;
 exports.ServerResponseX = response_1.ServerResponseX;

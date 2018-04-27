@@ -20,6 +20,7 @@ export interface GlobalEnvironmentVariables {
     ModelDir: string;
     Controllers: Array<string>;
     WebDir: string;
+    LogDir: string;
     MaxCacheSize: number; // unit byte
     DBProvider: string;
     DBConnectionString: string;
@@ -29,6 +30,7 @@ export interface GlobalEnvironmentVariables {
     PluginDir: string;
     Verbose: boolean;
     TLSOptions: TLSConfiguration;
+    LogOptions: LogOption;
 };
 
 export interface TLSConfiguration {
@@ -36,4 +38,9 @@ export interface TLSConfiguration {
     Cert: string;
     Key: string;
     CA: string;
+}
+
+export interface LogOption {
+    BufferSize: number; // byte
+    LogLimit: number; // byte
 }

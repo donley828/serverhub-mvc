@@ -261,4 +261,4 @@ function FormatDate(date?: Date): string {
     else return `${DateTime.GetDayName()}, ${DateTime.GetDay()} ${DateTime.GetMonth()} ${DateTime.GetYear()} ${DateTime.GetHours()}:${DateTime.GetMinutes()}:${DateTime.GetSeconds()} GMT`;
 }
 
-export { Headers, IsValidHeaders, IsValidHeader, GetReasonMessage, TransformHeader, FormatDate };
+export { Headers, IsValidHeaders, IsValidHeader, GetReasonMessage, TransformHeader, FormatDate, StatusCode };

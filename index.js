@@ -175,7 +175,7 @@ exports.Run = (config, appstart) => {
     try {
         if (!Array.isArray(port))
             port = [port];
-        let tls = config['TLSOption'] || config['SSLOption'];
+        let tls = config['TLSOptions'] || config['SSLOptions'];
         if (tls && tls.hasOwnProperty('Port') && tls.hasOwnProperty('Cert') && tls.hasOwnProperty('Key') && tls.hasOwnProperty('CA')) {
             if (!(tls.Port instanceof Array))
                 tls.Port = [parseInt(tls.Port)];

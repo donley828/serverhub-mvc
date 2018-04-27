@@ -54,6 +54,7 @@ const StatusCode = [
     505,
     511
 ];
+exports.StatusCode = StatusCode;
 const StatusCodeMessage = [
     "Continue",
     "Switching Protocols",

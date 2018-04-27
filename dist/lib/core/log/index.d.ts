@@ -1,2 +1,3 @@
 import { BuiltInLogger } from "./built-in";
-export { BuiltInLogger as DefaultLogger };
+import { LogFilter, ILogger } from "./base";
+export { LogFilter, ILogger, BuiltInLogger as DefaultLogger };

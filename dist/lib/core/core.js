@@ -20,6 +20,7 @@ global['EnvironmentVariables'] = global['EnvironmentVariables'] ? global['Enviro
     ModelDir: 'model/',
     PageNotFound: '',
     WebDir: 'www/',
+    LogDir: 'log/',
     MaxCacheSize: 350,
     DBProvider: 'mysql',
     DBConnectionString: null,
@@ -27,7 +28,11 @@ global['EnvironmentVariables'] = global['EnvironmentVariables'] ? global['Enviro
     AsyncOperationTimeout: 10000,
     PluginDir: 'plugin/',
     Verbose: true,
-    TLSOptions: void 0
+    TLSOptions: void 0,
+    LogOptions: {
+        BufferSize: 1048576,
+        LogLimit: 1048576
+    }
 };
 const core_env = {
     platform: process.platform,
