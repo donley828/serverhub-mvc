@@ -1,20 +1,23 @@
 import { IncomingMessage } from "http";
-import { DateTime } from "../util";
+import { DateTime, RandomHashTag } from "../util";
 import { LogFilter, ILogger } from './base';
 import * as fs from "fs";
 import * as path from 'path';
 import { GlobalEnvironmentVariables } from "../global";
 import { JSONX } from "../helper";
+import { StreamManager } from "../runtime";
+import * as colors from "colors";
 
 class RequestLogger implements ILogger {
-    private _buffer: Buffer;
     private _writeStream: fs.WriteStream;
     private _logDir: string;
     private _logFile: string;
+    private _currentHead: Object;
+    private _headSent: boolean;
+    private _paused: boolean;
 
     constructor() {
         let variables = global['EnvironmentVariables'] as GlobalEnvironmentVariables;
-        this._buffer = Buffer.alloc(1048576, ''); // intial buffer size: 1024 KByte.
         this._logDir = path.resolve(variables.ServerBaseDir, variables.LogDir);
         if (!fs.existsSync(this._logDir)) {
             fs.mkdirSync(this._logDir);
@@ -28,46 +31,58 @@ class RequestLogger implements ILogger {
             }
         })
         if (this._logFile === void 0 || this._logFile === null)
-            this._logFile = path.resolve(this._logDir, this.generateLogFilename());
+            this._logFile = path.resolve(this._logDir, this.GenerateLogFilename());
 
         this._writeStream = fs.createWriteStream(this._logFile, { autoClose: false, start: 0 });
-    }
-
-    public async write(chunk: any, callback?: (result: boolean) => void) {
-        let res = this._writeStream.write(chunk);
-        if (callback)
-            callback(res);
-    }
-    public writeHead(head: Object): void {
-        let targetPath = this._logFile;
-        let headString = '';
-        let tempHead = {};
-        Object.keys(head).forEach(key => {
-            if (!(head[key] instanceof Function)) {
-                tempHead[key] = head[key];
-            }
-        })
-        headString = JSONX(tempHead, { indent_char: '', indent_size: 0 });
+        this._writeStream['__serverhub_signature__'] = RandomHashTag(16);
         this._writeStream.on('close', () => {
-            process.nextTick((tpath) => {
-                if (fs.existsSync(tpath)) {
-                    let reads = fs.createReadStream(tpath);
-                    let temps = fs.createWriteStream(tpath + '.bak');
-                    temps.write(headString + '\n===ServerHub Built-in Request Logger===\n');
-                    temps.on('close', () => {
-                        fs.unlinkSync(tpath);
-                        fs.renameSync(tpath + '.bak', tpath);
-                    })
-                    reads.pipe(temps);
-                }
-            }, targetPath)
+            StreamManager.GetInstance().Remove(this._writeStream['__serverhub_signature__']);
         })
+        StreamManager.GetInstance().PushStream(this._writeStream);
+        this._headSent = false;
+        this._paused = false;
     }
 
-    public writeSync(chunk: any): boolean {
-        return this._writeStream.write(chunk);
+    public SwitchStream(): void {
+        this._paused = true;
+        this._writeStream.close();
+        this._logFile = path.resolve(this._logDir, this.GenerateLogFilename());
+        this._writeStream = fs.createWriteStream(this._logFile, { autoClose: false, start: 0 });
+        let oldsig = this._writeStream['__serverhub_signature__'];
+        this._writeStream['__serverhub_signature__'] = RandomHashTag(16);
+        this._writeStream.on('close', () => {
+            StreamManager.GetInstance().Remove(oldsig);
+        })
+        StreamManager.GetInstance().PushStream(this._writeStream);
+        this._headSent = false;
+        this._paused = false;
     }
-    public remove(filter: (path: string, filename: string) => boolean): number {
+
+    public async Write(chunk: any, callback?: (result: boolean) => void) {
+        if (!this._writeStream.writable)
+            return;
+
+        // check is log file length reached limit.
+        let variables = global['EnvironmentVariables'] as GlobalEnvironmentVariables;
+        let newlength = chunk instanceof Buffer ? chunk.byteLength : (chunk.toString() as string).length;
+        if (this._writeStream.bytesWritten + newlength >= variables.LogOptions.LogLimit)
+            this.SwitchStream();
+        const continusWriteOp = () => {
+            let bytesWritten = 0;
+            let previouslyWrittenLength = this._writeStream.bytesWritten;
+            if (!this._writeStream.write((chunk instanceof Buffer) ? chunk.toString('utf8', bytesWritten) : (typeof chunk === 'string') ? chunk : chunk.toString() as string)) {
+                bytesWritten = this._writeStream.bytesWritten - previouslyWrittenLength;
+                this._writeStream.on('drain', () => {
+                    this._writeStream.write((chunk instanceof Buffer) ? chunk.toString('utf8', bytesWritten) : (typeof chunk === 'string') ? chunk : chunk.toString() as string) ? () => { !!callback ? callback(true) : ''; } : continusWriteOp();
+                })
+            } else return true;
+        }
+        if (continusWriteOp())
+            if (callback)
+                callback(true);
+
+    }
+    public Remove(filter: (path: string, filename: string) => boolean): number {
         let count = 0;
         if (this._logDir && fs.existsSync(this._logDir)) {
             fs.readdirSync(this._logDir).forEach(file => {
@@ -80,7 +95,7 @@ class RequestLogger implements ILogger {
         }
         return count;
     }
-    public removeAll(): number {
+    public RemoveAll(): number {
         let count = 0;
         if (this._logDir && fs.existsSync(this._logDir)) {
             fs.readdirSync(this._logDir).forEach(file => {
@@ -91,34 +106,13 @@ class RequestLogger implements ILogger {
         return count;
     }
 
-    public read(tpath: string, offset: number, callback: (stream: fs.ReadStream) => void): void {
+    public Read(tpath: string, offset: number, callback: (stream: fs.ReadStream) => void): void {
         if (fs.existsSync(tpath)) {
             callback(fs.createReadStream(tpath, { start: offset }));
         }
     }
-    public readSync(tpath: string, offset: number): string {
-        if (fs.existsSync(tpath)) {
-            let r = fs.readFileSync(tpath);
-            return r.toString(void 0, offset);
-        }
-    }
-    public parseHead(input: string): Object {
-        if (!input.includes('===ServerHub Built-in Request Logger==='))
-            return {};
-        let segs = input.split('===ServerHub Built-in Request Logger===');
-        let headString = segs[0];
-        return JSON.parse(headString);
-    }
-    public parseLines(input: string): string[] {
-        let body = '';
-        if (!input.includes('===ServerHub Built-in Request Logger==='))
-            body = input;
-        let segs = input.split('===ServerHub Built-in Request Logger===');
-        body = segs[1];
-        return body.split('\n');
-    }
 
-    public generateLogFilename(): string {
+    public GenerateLogFilename(): string {
         return `serverhub_log_${DateTime.GetYear()}_${DateTime.GetMonth()}_${DateTime.GetDay()}_${DateTime.GetHours()}${DateTime.GetMinutes()}${DateTime.GetSeconds()}${DateTime.GetMilliseconds()}.shlog`;
     }
 }
@@ -146,10 +140,11 @@ class BuiltInLogger {
             timezoneOffset = Math.abs(timezoneOffset);
             timezone = timezoneOffset < 10 ? `-0${timezoneOffset}00` : `-${timezoneOffset}00`;
         }
-        let log = `${req.connection.remoteAddress ? req.connection.remoteAddress : '-'} [${DateTime.GetDay()}/${DateTime.GetMonth()}/${DateTime.GetYear()}:${DateTime.GetHours()}:${DateTime.GetMinutes()}:${DateTime.GetSeconds()} ${timezone}] "${req.method} ${req.url} HTTP${req['secure'] ? 'S' : ''}/${req.httpVersion}" ${statusCode} ${byteSize ? byteSize : '-'}`;
+        let log = `${req.connection.remoteAddress ? req.connection.remoteAddress : '-'} [${DateTime.GetDay()}/${DateTime.GetMonth()}/${DateTime.GetYear()}:${DateTime.GetHours()}:${DateTime.GetMinutes()}:${DateTime.GetSeconds()} ${timezone}] "${req.method} ${req.url} HTTP${req['secure'] ? 'S' : ''}/${req.httpVersion}" ${statusCode} ${byteSize ? byteSize : '-'}\n`;
         if (!BuiltInLogger.Logger)
             BuiltInLogger.Logger = new RequestLogger();
-        process.nextTick(() => BuiltInLogger.Logger.write(log));
+        global.setTimeout(() => console.log(log), 0);
+        // process.nextTick(() => BuiltInLogger.Logger.Write(log));
     }
     public static Logger: RequestLogger;
 }

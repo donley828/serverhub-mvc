@@ -67,37 +67,23 @@ interface ILogger {
      * Write log to buffer.
      * @param chunk A chunk of data to log
      */
-    write(chunk: any, callback?: (result: boolean) => void): void;
+    Write(chunk: any, callback?: (result: boolean) => void): void;
 
     /**
-     * Write log to fs synchronously.
-     * @param chunk A chunk of data to write to log.
-     */
-    writeSync(chunk: any): boolean;
-    /**
-     * Remove with certain filter and return lines count of logs been removed.
+     * Remove with certain filter and return files count of logs been removed.
      * @param filter Filter function, must return boolean.
      */
-    remove(filter: (path: string, filename: string) => boolean): number;
+    Remove(filter: (path: string, filename: string) => boolean): number;
     /**
-     * Remove all logs and return lines count of logs been removed.
+     * Remove all logs and return files count of logs been removed.
      */
-    removeAll(): number;
-
+    RemoveAll(): number;
     /**
      * Generate a log filename with a unique type.
      */
-    generateLogFilename(): string;
-    /**
-     * Write specific head to log file.
-     * @param head Head object, should only contain data properties
-     */
-    writeHead(head: Object): void;
+    GenerateLogFilename(): string;
 
-    read(path: string, offset: number, callback: (stream: ReadStream) => void): void;
-    readSync(path: string, offset: number): string;
-    parseHead(input: string): Object;
-    parseLines(input: string): string[];
+    Read(path: string, offset: number, callback: (stream: ReadStream) => void): void;
 }
 
 export { LogFilter, ILogger };

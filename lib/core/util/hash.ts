@@ -4,12 +4,13 @@ import { StringToCharArray } from "./array";
 function RandomHashTag(length = 16): string {
     let v = [];
     while (length > 0) {
-        v.push(RandomChar(alphanumeric));
+        v.push(RandomChar(hex));
         length -= 1;
     }
     return v.join('');
 }
 const alphanumeric = StringToCharArray('abcdefghijklmnopqrstuvwxyz0123456789');
+const hex = StringToCharArray('abcdef0123456789');
 const symbols = StringToCharArray(`\\\`~!@#$%^&*()-_=+[{]}\|;:'",<.>/?`);
 function RandomChar(set: string[]): string {
     if (set && set.length > 0) {

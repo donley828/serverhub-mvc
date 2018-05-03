@@ -7,15 +7,10 @@ declare class LogFilter {
     Method: string | boolean | Array<string>;
 }
 interface ILogger {
-    write(chunk: any, callback?: (result: boolean) => void): void;
-    writeSync(chunk: any): boolean;
-    remove(filter: (path: string, filename: string) => boolean): number;
-    removeAll(): number;
-    generateLogFilename(): string;
-    writeHead(head: Object): void;
-    read(path: string, offset: number, callback: (stream: ReadStream) => void): void;
-    readSync(path: string, offset: number): string;
-    parseHead(input: string): Object;
-    parseLines(input: string): string[];
+    Write(chunk: any, callback?: (result: boolean) => void): void;
+    Remove(filter: (path: string, filename: string) => boolean): number;
+    RemoveAll(): number;
+    GenerateLogFilename(): string;
+    Read(path: string, offset: number, callback: (stream: ReadStream) => void): void;
 }
 export { LogFilter, ILogger };

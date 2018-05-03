@@ -67,42 +67,13 @@ function RoutePath(path, request, response) {
     responseX.setHeader('server', `ServerHub/${global['EnvironmentVariables'].PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
     let ee = responseX.connection;
     ee.setMaxListeners(64);
-    let closeListener = () => {
+    let endListener = () => {
         log_1.DefaultLogger.LogRequest(request, responseX.statusCode, responseX.contentLength);
-        closeListener['socketType'] === "TLSSocket" ?
-            closedTLSSockets.push(closeListener['signature']) :
-            closedSockets.push(closeListener['signature']);
+        responseX.connection.removeListener('end', endListener);
     };
-    closeListener['signature'] = util_1.RandomHashTag();
-    closeListener['socketType'] = responseX.connection instanceof tls.TLSSocket ? "TLSSocket" : "Socket";
-    responseX.connection.on("close", closeListener);
-    responseX.on("close", () => {
-    });
-    responseX.on("finish", () => {
-    });
-    process.nextTick(() => {
-        let listeners = responseX.connection.listeners('close');
-        if (!listeners)
-            return;
-        listeners.forEach(lsn => {
-            if (lsn['socketType'])
-                switch (lsn['socketType']) {
-                    case 'Socket': {
-                        if (closedSockets.includes(lsn['signature'])) {
-                            responseX.connection.removeListener('close', lsn);
-                            closedSockets = closedSockets.splice(closedSockets.indexOf(lsn['signature']), 1);
-                        }
-                        break;
-                    }
-                    default: {
-                        if (closedTLSSockets.includes(lsn['signature'])) {
-                            responseX.connection.removeListener('close', lsn);
-                            closedTLSSockets = closedTLSSockets.splice(closedTLSSockets.indexOf(lsn['signature']), 1);
-                        }
-                    }
-                }
-        });
-    });
+    endListener['signature'] = util_1.RandomHashTag();
+    endListener['socketType'] = responseX.connection instanceof tls.TLSSocket ? "TLSSocket" : "Socket";
+    responseX.connection.on("end", endListener);
     plugin_1.BeforeRoute(request, responseX, (requ, resp) => {
         let routeResult = ROUTE.RunRoute(path);
         plugin_1.AfterRoute(requ, resp, routeResult, (req, res) => {

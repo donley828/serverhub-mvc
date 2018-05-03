@@ -3,21 +3,19 @@ import { IncomingMessage } from "http";
 import { ILogger } from './base';
 import * as fs from "fs";
 declare class RequestLogger implements ILogger {
-    private _buffer;
     private _writeStream;
     private _logDir;
     private _logFile;
+    private _currentHead;
+    private _headSent;
+    private _paused;
     constructor();
-    write(chunk: any, callback?: (result: boolean) => void): Promise<void>;
-    writeHead(head: Object): void;
-    writeSync(chunk: any): boolean;
-    remove(filter: (path: string, filename: string) => boolean): number;
-    removeAll(): number;
-    read(tpath: string, offset: number, callback: (stream: fs.ReadStream) => void): void;
-    readSync(tpath: string, offset: number): string;
-    parseHead(input: string): Object;
-    parseLines(input: string): string[];
-    generateLogFilename(): string;
+    SwitchStream(): void;
+    Write(chunk: any, callback?: (result: boolean) => void): Promise<void>;
+    Remove(filter: (path: string, filename: string) => boolean): number;
+    RemoveAll(): number;
+    Read(tpath: string, offset: number, callback: (stream: fs.ReadStream) => void): void;
+    GenerateLogFilename(): string;
 }
 declare class BuiltInLogger {
     private static Filter;
