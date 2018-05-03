@@ -104,6 +104,7 @@ function CleanListener(sign): void {
 export function RoutePath(path: string, request: IncomingMessage, response: ServerResponse): void {
     let responseX = ServerResponseExtension(response);
     responseX.setHeader('server', `ServerHub/${(global['EnvironmentVariables'] as GlobalEnvironmentVariables).PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
+    
     let ee = responseX.connection as EventEmitter;
     ee.setMaxListeners(64);
     let endListener = () => {
@@ -113,8 +114,6 @@ export function RoutePath(path: string, request: IncomingMessage, response: Serv
     endListener['signature'] = RandomHashTag();
     endListener['socketType'] = responseX.connection instanceof tls.TLSSocket ? "TLSSocket" : "Socket";
     responseX.connection.on("end", endListener);
-
-    response.setHeader('server', `ServerHub/${(global['EnvironmentVariables'] as GlobalEnvironmentVariables).PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
 
     let bPromise = BeforeRoute(request, responseX);
     let routeResult = ROUTE.RunRoute(path);

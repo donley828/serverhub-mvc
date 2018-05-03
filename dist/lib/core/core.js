@@ -74,7 +74,6 @@ function RoutePath(path, request, response) {
     endListener['signature'] = util_1.RandomHashTag();
     endListener['socketType'] = responseX.connection instanceof tls.TLSSocket ? "TLSSocket" : "Socket";
     responseX.connection.on("end", endListener);
-    response.setHeader('server', `ServerHub/${global['EnvironmentVariables'].PackageData['version']} (${core_env.platform}) Node.js ${core_env.node_version}`);
     let bPromise = plugin_1.BeforeRoute(request, responseX);
     let routeResult = ROUTE.RunRoute(path);
     let doneAfterRoutePluginExecution = (errCount) => {
